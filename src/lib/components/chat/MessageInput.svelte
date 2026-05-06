@@ -1190,6 +1190,9 @@
 													>
 												</button>
 											</Tooltip>
+
+
+										
 										{/if}
 
 										{#if $config?.features?.enable_image_generation && ($_user.role === 'admin' || $_user?.permissions?.features?.image_generation)}

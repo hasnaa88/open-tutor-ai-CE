@@ -163,7 +163,7 @@
 	};
 </script>
 
-<div class="relative flex h-full">
+<div class="relative flex h-full ">
 	<!-- Main content area - padding makes room for the fixed sidebar -->
 	<div class={`w-full transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-16'}`}>
 		<!-- Mobile toggle button - visible only on mobile -->

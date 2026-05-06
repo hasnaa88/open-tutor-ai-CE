@@ -321,6 +321,8 @@ input[type='number'] {
 	@apply rounded-md dark:bg-gray-800 bg-gray-100 mx-0.5;
 }
 
+
+
 /* Code styling */
 .hljs-comment,
 .hljs-quote {
@@ -372,3 +374,821 @@ input[type='number'] {
 .hljs-strong {
 	font-weight: 700;
 }
+
+
+
+
+
+
+/* progess bar */
+.progress-card {
+	@apply w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-blue-600 dark:border-gray-800 p-6 transition-all;
+	
+}
+
+.progress-title {
+	@apply text-lg font-semibold text-gray-900 dark:text-white;
+}
+
+.progress-value {
+	@apply text-3xl font-bold text-blue-600 dark:text-blue-400;
+}
+
+.progress-badge {
+	@apply text-xs font-medium px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300;
+}
+
+.progress-bar-container {
+	@apply w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+	@apply h-full rounded-full transition-all duration-700 ease-out;
+}
+
+.card-hover {
+	@apply hover:shadow-lg hover:scale-[1.02];
+}
+
+
+/* end progess bar */
+
+
+
+
+
+/* ===== Chat page ===== */
+
+
+
+/* ========================================
+   🌐 DESIGN SYSTEM (LIGHT MODE)
+======================================== */
+
+:root {
+  --primary: #2563eb;
+  --secondary: #22c55e;
+  --accent: #f59e0b;
+
+  --bg-main: #EEF2F7;
+  --bg-soft: #E0F2FE;
+  --bg-card: #ffffff;
+
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
+  --border-color: #e2e8f0;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.08);
+
+  --gradient-main: linear-gradient(135deg, #2563eb, #22c55e);
+  --gradient-soft: linear-gradient(135deg, #3b82f6, #06b6d4);
+}
+
+/* ========================================
+   🌈 BACKGROUND GLOBAL
+======================================== */
+
+#chat-container {
+  background: linear-gradient(to bottom right, var(--bg-main), var(--bg-soft));
+}
+
+/* ========================================
+   🧭 NAVBAR (glass effect)
+======================================== */
+
+.navbar-modern {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ========================================
+   💬 CHAT MESSAGES
+======================================== */
+
+/* Assistant */
+.message-assistant,
+[data-message-role="assistant"] .message-content {
+  background: var(--bg-card);
+  border-radius: 0 18px 18px 18px;
+  padding: 14px 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-main);
+
+  border-left: 4px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+  max-width: 75%;
+}
+
+/* User */
+.message-user,
+[data-message-role="user"] .message-content {
+  background: var(--gradient-main);
+  color: white;
+
+  border-radius: 18px 18px 0 18px;
+  padding: 12px 16px;
+
+  font-size: 15px;
+  line-height: 1.6;
+
+  margin-left: auto;
+  max-width: 65%;
+
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+}
+
+/* ========================================
+   ✨ MESSAGE ANIMATION
+======================================== */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-assistant,
+.message-user {
+  animation: fadeUp 0.3s ease;
+}
+
+/* ========================================
+   ⌨️ INPUT CHAT
+======================================== */
+
+#chat-input {
+  width: 100%;
+  border-radius: 999px;
+  background: white;
+  border: 1.5px solid var(--border-color);
+  padding: 14px 20px;
+  font-size: 15px;
+
+  box-shadow: var(--shadow-md);
+  transition: all 0.25s ease;
+}
+
+#chat-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+/* ========================================
+   📦 INPUT WRAPPER
+======================================== */
+
+.message-input-wrapper {
+  background: transparent;
+}
+
+/* ========================================
+   👤 AVATAR
+======================================== */
+
+.tutor-avatar,
+.message-assistant img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ========================================
+   🧱 CARDS (progress / panels)
+======================================== */
+
+.card-modern {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease;
+}
+
+.card-modern:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ========================================
+   📊 PROGRESS BAR
+======================================== */
+
+.progress-bar-container {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+
+  background: linear-gradient(to right, #2563eb, #22c55e);
+  transition: width 0.8s ease;
+}
+
+/* ========================================
+   🔘 BUTTONS
+======================================== */
+
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ========================================
+   🧭 SCROLLBAR
+======================================== */
+
+#messages-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+#messages-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+
+#messages-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========================================
+   🎯 BADGES / STATUS
+======================================== */
+
+.badge-success {
+  background: #dcfce7;
+  color: #16a34a;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #d97706;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* ========================================
+   ✨ HOVER CARDS (OPTIONAL)
+======================================== */
+
+.card-hover {
+  transition: all 0.25s ease;
+}
+
+.card-hover:hover {
+  transform: scale(1.02);
+}
+
+
+
+
+
+
+/* ========================================
+   CHAT 2026 — classes custom
+======================================== */
+
+/* Background gradient principal */
+.chat-bg {
+  background: linear-gradient(160deg, #EEF2F7 0%, #dbeafe 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow décoratif en arrière-plan */
+.chat-bg::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.chat-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dark mode background */
+.dark .chat-bg {
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+}
+.dark .chat-bg::before {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+}
+.dark .chat-bg::after {
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+}
+
+/* Zone input glassmorphism */
+.input-float-zone {
+  background: linear-gradient(to top, rgba(238, 242, 247, 0.97) 60%, rgba(238, 242, 247, 0) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.dark .input-float-zone {
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.97) 60%, rgba(15, 23, 42, 0) 100%);
+}
+
+/* Input card avec glow hover */
+.input-card-wrapper {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.input-card-wrapper:hover {
+  transform: scale(1.005);
+}
+.input-card-wrapper:focus-within {
+  transform: scale(1.008) translateY(-1px);
+}
+
+/* Glow derrière l'input au focus */
+.input-card-glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(6, 182, 212, 0.1));
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+.input-card-wrapper:focus-within .input-card-glow {
+  opacity: 1;
+}
+
+/* Card input principale */
+
+/* Message utilisateur — dégradé bleu */
+[data-message-role="user"] .message-content,
+.message-user {
+  background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%) !important;
+  color: #ffffff !important;
+  border-radius: 20px 20px 4px 20px !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.28) !important;
+}
+
+/* Typing indicator */
+.ai-typing-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 4px 0;
+  animation: fadeUp 0.25s ease-out;
+}
+.ai-typing-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border-radius: 4px 18px 18px 18px;
+  padding: 12px 18px;
+  border: 1px solid rgba(37, 99, 235, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  animation: fadeUp 0.25s ease-out;
+}
+.dark .ai-typing-bubble {
+  background: #1e293b;
+  border-color: rgba(96, 165, 250, 0.15);
+}
+.ai-typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ai-typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.ai-typing-dot:nth-child(2) { animation-delay: 0.18s; }
+.ai-typing-dot:nth-child(3) { animation-delay: 0.36s; }
+.ai-typing-text {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+}
+.dark .ai-typing-text {
+  color: #94a3b8;
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40%            { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Navbar glassmorphism */
+.navbar-glass {
+  background: rgba(255, 255, 255, 0.80) !important;
+  backdrop-filter: blur(16px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.4) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 2px 16px rgba(37, 99, 235, 0.07) !important;
+}
+.dark .navbar-glass {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Message animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+[id^="message-"] {
+  animation: fadeUp 0.22s ease-out;
+}
+
+/* Scrollbar */
+#messages-container::-webkit-scrollbar       { width: 8px; }
+#messages-container::-webkit-scrollbar-track { background: transparent; }
+#messages-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+#messages-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+#messages-container {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* Sidebar */
+.sidebar-panel {
+  background: #ffffff;
+  border-left: 1px solid rgba(37, 99, 235, 0.08);
+  box-shadow: -2px 0 16px rgba(37, 99, 235, 0.04);
+}
+.dark .sidebar-panel {
+  background: #1e293b;
+  border-left-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Loading motivant */
+.loading-bg {
+  background: linear-gradient(160deg, #EEF2F7 0%, #dbeafe 100%);
+}
+.dark .loading-bg {
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+}
+.loading-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.35);
+  animation: spinAnim 1.1s linear infinite;
+}
+.loading-label {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+  animation: pulseAnim 1.6s ease-in-out infinite;
+}
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.18s; }
+.loading-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes spinAnim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes pulseAnim {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* Progress bar shimmer */
+.progress-bar-container {
+  width: 100%;
+  height: 9px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to right, #2563eb, #06b6d4);
+  transition: width 1s cubic-bezier(0.34, 1.2, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  0%   { left: -60%; }
+  100% { left: 130%; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chat-bg::before, .chat-bg::after { display: none; }
+}
+
+
+/* ========================================
+   BULLE UTILISATEUR — dégradé bleu 2026
+======================================== */
+
+.user-message .flex.items-start.max-w-full {
+  background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%) !important;
+  border-radius: 20px 20px 4px 20px !important;
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.30) !important;
+  border: none !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Shimmer au hover */
+.user-message .flex.items-start.max-w-full::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.user-message .flex.items-start.max-w-full:hover::before {
+  left: 150%;
+}
+
+/* Légère élévation au hover */
+.user-message .flex.items-start.max-w-full:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(37, 99, 235, 0.38) !important;
+}
+
+/* Texte blanc dans la bulle */
+.user-message .flex.items-start.max-w-full *,
+.user-message .flex.items-start.max-w-full p,
+.user-message .flex.items-start.max-w-full span,
+.user-message .flex.items-start.max-w-full code {
+  color: #ffffff !important;
+}
+
+/* Bouton édition visible sur fond bleu */
+.user-message .edit-user-message-button {
+  color: rgba(255, 255, 255, 0.65) !important;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.user-message .edit-user-message-button:hover {
+  color: #ffffff !important;
+  transform: scale(1.15);
+}
+
+/* Code block dans message utilisateur */
+.user-message .flex.items-start.max-w-full pre,
+.user-message .flex.items-start.max-w-full code {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+}
+
+/* Animation d'entrée */
+.user-message {
+  animation: slideInRight 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+
+
+
+
+/* ========================================
+   BULLE AI — design moderne 2026
+======================================== */
+
+/* Container principal du message AI */
+.message-content-container {
+  background: #ffffff !important;
+  border-radius: 0px 20px 2px 0px !important;
+  border: 1px solid rgba(37, 99, 235, 0.10) !important;
+  box-shadow: 0 2px 16px rgba(37, 99, 235, 0.08) !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Barre accent bleue à gauche */
+.message-content-container::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  background: linear-gradient(to bottom, #2563eb, #06b6d4);
+  border-radius: 0 3px 3px 0;
+}
+
+/* Hover élévation */
+.message-content-container:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.13) !important;
+}
+
+/* Dark mode */
+.dark .message-content-container {
+  background: #1e293b !important;
+  border-color: rgba(96, 165, 250, 0.12) !important;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Animation d'entrée depuis la gauche */
+[id^="message-"] .message-content-container {
+  animation: slideInLeft 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Texte du message AI */
+.chat-assistant {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #1e293b;
+}
+
+.dark .chat-assistant {
+  color: #f1f5f9;
+}
+
+/* Titres dans la réponse AI */
+.chat-assistant h1,
+.chat-assistant h2,
+.chat-assistant h3 {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Code inline */
+.chat-assistant code:not(pre code) {
+  background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(6,182,212,0.08));
+  color: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 13px;
+}
+
+.dark .chat-assistant code:not(pre code) {
+  background: rgba(96, 165, 250, 0.12);
+  color: #93c5fd;
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+/* Blocs de code */
+.chat-assistant pre {
+  background: #f8fafc !important;
+  border: 1px solid rgba(37, 99, 235, 0.10);
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.dark .chat-assistant pre {
+  background: #0f172a !important;
+  border-color: rgba(96, 165, 250, 0.1);
+}
+
+/* Listes */
+.chat-assistant ul li::marker,
+.chat-assistant ol li::marker {
+  color: #2563eb;
+}
+
+/* Liens */
+.chat-assistant a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 99, 235, 0.3);
+  transition: text-decoration-color 0.2s ease;
+}
+
+.chat-assistant a:hover {
+  text-decoration-color: #2563eb;
+}
+
+/* Séparateurs */
+.chat-assistant hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(37,99,235,0.2), transparent);
+  margin: 16px 0;
+}
+
+/* Boutons d'action en bas du message */
+.message-content-container .buttons button {
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.message-content-container .buttons button:hover {
+  transform: scale(1.12);
+  color: #2563eb !important;
+}
+
+/* Bouton like — vert */
+.message-content-container .buttons button svg[stroke="#10b981"]:hover {
+  filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.4));
+}
+
+/* Timestamp */
+.message-content-container .self-center.text-xs {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+/* Profile image AI — carré arrondi avec glow */
+.shrink-0 img,
+.shrink-0 .size-14 {
+  border-radius: 100px !important;
+  
+  border: 2px solid rgba(37, 99, 235, 0.15) !important;
+  
+}
+
