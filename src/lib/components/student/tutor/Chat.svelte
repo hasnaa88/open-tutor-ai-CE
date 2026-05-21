@@ -16,6 +16,9 @@
 	import type { i18n as i18nType } from 'i18next';
 	import { TUTOR_BASE_URL } from '$lib/constants';
 	import promptData  from './prompt.json';
+	import { tutorPersonaId, getActivePersona } from '$lib/stores/tutorPersona';
+
+
 
 
 	import {
@@ -428,6 +431,7 @@
 
 	onMount(async () => {
 		console.log('mounted');
+		console.log('🌟🌟🌟 Chat.svelte STUDENT/TUTOR est monté - URL:', window.location.pathname);
 		
 		// Initialize global event target if it doesn't exist
 		if (typeof window !== 'undefined' && !window.openTutorEvents) {
@@ -1722,11 +1726,12 @@
 			})
 		);
 
-		currentChatPage.set(1);
+		currentChatPage.set(1);  
 		chats.set(await getChatList(localStorage.token, $currentChatPage));
 	};
 
 	const sendPromptSocket = async (_history, model, responseMessageId, _chatId) => {
+
 		const responseMessage = _history.messages[responseMessageId];
 		const userMessage = _history.messages[responseMessage.parentId];
 
@@ -2005,11 +2010,17 @@
 						: ''
 				}`;
 
+		// --- Tutor persona injection ---
+		const activePersona = getActivePersona(get(tutorPersonaId));
+		const personaInstruction = `\n\nTUTOR STYLE: ${activePersona.systemPrompt}`;
+		
+		// --- end persona injection ---
+
 		let messages = [
 			{
 				role: 'system',
 				// If we have system messages from support context, prioritize them
-				content: combinedSystemPrompt || baseSystemContent
+				content: (combinedSystemPrompt || baseSystemContent) + personaInstruction
 			},
 			// Only include non-system messages in the conversation
 			...createMessagesList(_history, responseMessageId)
