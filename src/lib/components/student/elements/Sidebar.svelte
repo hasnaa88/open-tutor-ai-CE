@@ -151,13 +151,14 @@
 	// Navigation items organized by role
 	const navItems: NavItems = {
 		student: [
-			{ id: 'dashboard', label: 'Dashboard', icon: Dashboard },
-			{ id: 'classrooms', label: 'My Classrooms', icon: Classroom },
-			{ id: 'supports', label: 'Support', icon: Classroom },
-			{ id: 'assignments', label: 'Assignments', icon: Assignment },
-			{ id: 'messages', label: 'Messages', icon: Message },
-			{ id: 'settings', label: 'Profile & Settings', icon: Settings }
-		],
+    { id: 'dashboard', label: 'Dashboard', icon: Dashboard },
+    { id: 'classrooms', label: 'My Classrooms', icon: Classroom },
+    { id: 'supports', label: 'Support', icon: Classroom },
+    { id: 'assignments', label: 'Assignments', icon: Assignment },
+    { id: 'messages', label: 'Messages', icon: Message },
+    { id: 'tutor-personalization', label: 'Tutor Personalization', icon: Settings },
+    { id: 'settings', label: 'Profile & Settings', icon: Settings }
+],
 		teacher: [],
 		parent: []
 	};
