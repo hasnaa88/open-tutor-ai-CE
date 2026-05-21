@@ -1506,5 +1506,36 @@
 	"I want to build a new skill": "Je veux apprendre une nouvelle compétence",
 	"Verify all details before creating your support": "Vérifiez toutes les informations avant de créer votre soutien",
 	"Review your support": "Révisez votre soutien",
-	"Support created successfully": "Soutien créé avec succès"
+	"Support created successfully": "Soutien créé avec succès",
+
+"Tutor Personalization": "Personnalisation du tuteur",
+	"Adjust your AI's personality to match your learning style.": "Ajustez la personnalité de votre IA pour qu'elle corresponde à votre style d'apprentissage.",
+	"ACTIVE": "ACTIF",
+	"Preferences saved": "Préférences sauvegardées",
+	"Academic": "Académique",
+	"Rigorous and formal tone, ideal for deepening complex theoretical concepts.": "Ton rigoureux et formel, idéal pour approfondir des concepts théoriques complexes.",
+	"Friendly": "Amical",
+	"An encouraging and accessible tutor who uses everyday language.": "Un tuteur encourageant et accessible qui utilise un langage quotidien.",
+	"Motivational": "Motivant",
+	"Boosts your confidence and pushes you to surpass your limits with enthusiasm.": "Booste votre confiance et vous pousse à dépasser vos limites avec enthousiasme.",
+	"Concise": "Concise",
+	"Direct and synthetic answers. Perfect for last-minute revisions.": "Réponses directes et synthétiques. Parfait pour les révisions de dernière minute.",
+	"Exam Coach": "Coach d'examen",
+	"Focus on methodology, common pitfalls, and exam time management.": "Focus sur la méthodologie, les pièges classiques et la gestion du temps d'examen.",
+	"tutor.preview.academic": "La photosynthèse constitue le processus biochimique par lequel les organismes chlorophylliens convertissent l'énergie lumineuse en énergie chimique. Elle se décompose en deux phases distinctes : la phase photochimique et le cycle de Calvin.",
+	"tutor.preview.friendly": "Bonne question ! La photosynthèse, c'est tout simplement la façon dont les plantes fabriquent leur nourriture grâce à la lumière du soleil. On va voir ça ensemble, étape par étape, tu vas voir c'est logique !",
+	"tutor.preview.motivational": "Excellente question, tu es sur la bonne voie ! La photosynthèse, c'est un concept clé — une fois que tu l'auras maîtrisé, tout le reste de la biologie te paraîtra plus clair. Allez, on s'y attaque !",
+	"tutor.preview.concise": "Photosynthèse : conversion de l'énergie lumineuse en énergie chimique. Deux phases — phase claire (production d'ATP) et cycle de Calvin (fixation du CO₂).",
+	"tutor.preview.exam_coach": "Pour l'examen, retenez bien les deux phases de la photosynthèse — c'est une question classique. Piège fréquent : confondre la phase claire et le cycle de Calvin. Entraînez-vous à les distinguer.",
+		"Tutor Personalization": "Personnalisation du tuteur",
+"Customize Tutor": "Personnaliser le tuteur",
+"Sample question preview": "Peux-tu m'expliquer brièvement la photosynthèse ?",
+	"mode active": "mode actif",
+	"Ready to chat with": "Prêt à discuter avec votre",
+	"tutor?": "tuteur ?",
+	"Start a new conversation": "Démarrer une nouvelle conversation"
+
+
+	
 }
+
