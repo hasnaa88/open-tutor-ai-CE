@@ -6,17 +6,14 @@ possible; native Ollama API operations live in a separate adapter (later task).
 
 import logging
 import time as _time
-from typing import Any, Dict, List, TYPE_CHECKING
+from typing import Any, Dict, List
 
 import httpx
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from providers.config_service import ProviderConfigService
-from providers.proxy import proxy_json, resolve_ollama_url
-
-if TYPE_CHECKING:
-    pass
+from providers.proxy import proxy_json
 
 log = logging.getLogger(__name__)
 
@@ -230,8 +227,8 @@ class ProvidersService:
                                 "urlIdx": idx,
                             }
                         )
-                except Exception:
-                    pass
+                except Exception as exc:
+                    log.warning("Ollama upstream unreachable (%s): %s", url, exc)
 
         # OpenAI-compatible models
         openai: list = []
@@ -254,31 +251,28 @@ class ProvidersService:
                                 "urlIdx": idx,
                             }
                         )
-                except Exception:
-                    pass
+                except Exception as exc:
+                    log.warning("OpenAI upstream unreachable (%s): %s", url, exc)
 
         # DB custom/overridden models
         # ModelsService is imported locally to avoid circular imports
         models_svc = ModelsService(self.config.session)
-        db_models = {
-            m.base_model_id: m.to_dict()
-            for m in models_svc.list_active()
-            if m.base_model_id
-        }
-        db_standalone = [
-            m.to_dict() for m in models_svc.list_active() if not m.base_model_id
-        ]
+        all_db = models_svc.list_active()
+        db_models = {m.base_model_id: m.to_dict() for m in all_db if m.base_model_id}
+        db_standalone = [m.to_dict() for m in all_db if not m.base_model_id]
 
-        # Merge: provider model gets overridden by matching DB entry
+        # Merge: provider model gets overridden by matching DB entry; deduplicate by id
         merged = []
         seen_ids: set = set()
         for m in ollama + openai:
             mid = m["id"]
+            if mid in seen_ids:
+                continue
+            seen_ids.add(mid)
             if mid in db_models:
                 merged.append({**m, **db_models[mid]})
             else:
                 merged.append(m)
-            seen_ids.add(mid)
 
         # Add standalone DB custom models not linked to any provider model
         merged.extend(db_standalone)
