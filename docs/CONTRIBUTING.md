@@ -25,6 +25,37 @@ We've noticed an uptick in issues not directly related to Open TutorAI but rathe
 
 Looking to contribute? Great! Here's how you can help:
 
+### ⚙️ Setup local (obligatoire avant de contribuer)
+
+Avant de soumettre un pull request, configure ton environnement local pour valider automatiquement ton code.
+
+**1. Installer les dépendances de développement**
+
+```bash
+pip install pre-commit
+```
+
+**2. Installer les hooks git**
+
+```bash
+pre-commit install
+```
+
+Le hook s'exécutera automatiquement à chaque `git commit`. Il vérifie :
+- Le formatage Python (Black 24.8.0)
+- Le formatage frontend (Prettier — JS/TS/Svelte)
+- Les fichiers mal terminés ou avec des espaces superflus
+
+**3. Valider avant de pousser**
+
+```bash
+make check
+```
+
+Cette commande exécute `make lint` (format check complet) puis `make test` (pytest + vitest). **Un push sans avoir passé `make check` sera rejeté par la CI.**
+
+---
+
 ### 🛠 Pull Requests
 
 We welcome pull requests. Before submitting one, please:
