@@ -8,9 +8,11 @@ from data.repositories import BaseRepository
 class ModelRepository(BaseRepository[ModelConfig]):
 
     def get_all_active(self) -> List[ModelConfig]:
-        return self.session.query(ModelConfig).filter(
-            ModelConfig.is_active.is_(True)
-        ).all()
+        return (
+            self.session.query(ModelConfig)
+            .filter(ModelConfig.is_active.is_(True))
+            .all()
+        )
 
     def get_all(self) -> List[ModelConfig]:
         return self.session.query(ModelConfig).all()

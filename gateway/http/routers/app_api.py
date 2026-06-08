@@ -36,6 +36,7 @@ def _images_svc(db: Session = Depends(get_db)) -> ImagesService:
 
 # ── /api/config ───────────────────────────────────────────────────────────────
 
+
 @router.get("/config")
 def get_backend_config(db: Session = Depends(get_db)):
     """Bootstrap config read by the UI before the user logs in."""
@@ -80,6 +81,7 @@ def get_backend_config(db: Session = Depends(get_db)):
 
 # ── /api/models ───────────────────────────────────────────────────────────────
 
+
 async def _ollama_models(db: Session) -> list:
     """Fetch models from all configured Ollama backends, return UI-shaped dicts."""
     cfg_svc = ProviderConfigService(db)
@@ -93,15 +95,17 @@ async def _ollama_models(db: Session) -> list:
             data = await proxy_json(url.rstrip("/"), "", "GET", "api/tags")
             for m in data.get("models", []):
                 model_id = m.get("model") or m.get("name", "")
-                result.append({
-                    "id": model_id,
-                    "name": m.get("name", model_id),
-                    "object": "model",
-                    "created": int(_time.time()),
-                    "owned_by": "ollama",
-                    "ollama": m,
-                    "urlIdx": idx,
-                })
+                result.append(
+                    {
+                        "id": model_id,
+                        "name": m.get("name", model_id),
+                        "object": "model",
+                        "created": int(_time.time()),
+                        "owned_by": "ollama",
+                        "ollama": m,
+                        "urlIdx": idx,
+                    }
+                )
         except Exception:
             pass
     return result
@@ -122,14 +126,16 @@ async def _openai_models(db: Session) -> list:
             data = await proxy_json(url.rstrip("/"), key, "GET", "models")
             for m in data.get("data", []):
                 model_id = m.get("id") or m.get("name", "")
-                result.append({
-                    **m,
-                    "id": model_id,
-                    "name": m.get("name", model_id),
-                    "object": "model",
-                    "owned_by": "openai",
-                    "urlIdx": idx,
-                })
+                result.append(
+                    {
+                        **m,
+                        "id": model_id,
+                        "name": m.get("name", model_id),
+                        "object": "model",
+                        "owned_by": "openai",
+                        "urlIdx": idx,
+                    }
+                )
         except Exception:
             pass
     return result
@@ -155,7 +161,9 @@ async def get_models(
     openai = await _openai_models(db)
 
     # DB custom/overridden models keyed by base_model_id
-    db_models = {m.base_model_id: m.to_dict() for m in svc.list_active() if m.base_model_id}
+    db_models = {
+        m.base_model_id: m.to_dict() for m in svc.list_active() if m.base_model_id
+    }
     db_standalone = [m.to_dict() for m in svc.list_active() if not m.base_model_id]
 
     # Merge: provider model gets overridden by matching DB entry
@@ -179,14 +187,33 @@ async def get_models(
 
 # Fields the UI adds that are NOT part of the OpenAI wire format
 _STRIP_FIELDS = {
-    "session_id", "chat_id", "id", "params", "features", "model_item",
-    "files", "tool_ids", "background_tasks", "avatar_type", "variables",
+    "session_id",
+    "chat_id",
+    "id",
+    "params",
+    "features",
+    "model_item",
+    "files",
+    "tool_ids",
+    "background_tasks",
+    "avatar_type",
+    "variables",
 }
 
 _STANDARD_PARAMS = {
-    "temperature", "top_p", "top_k", "max_tokens", "frequency_penalty",
-    "presence_penalty", "stop", "seed", "repeat_penalty", "keep_alive",
-    "num_ctx", "num_predict", "format",
+    "temperature",
+    "top_p",
+    "top_k",
+    "max_tokens",
+    "frequency_penalty",
+    "presence_penalty",
+    "stop",
+    "seed",
+    "repeat_penalty",
+    "keep_alive",
+    "num_ctx",
+    "num_predict",
+    "format",
 }
 
 
@@ -204,7 +231,7 @@ async def _resolve_provider(model_id: str, cfg_svc: ProviderConfigService):
     """Return (base_url, api_key, path_prefix) or raise 404."""
     ol_cfg = cfg_svc.get_ollama()
     if ol_cfg.get("ENABLE_OLLAMA_API"):
-        for url in (ol_cfg.get("OLLAMA_BASE_URLS") or []):
+        for url in ol_cfg.get("OLLAMA_BASE_URLS") or []:
             try:
                 tags = await proxy_json(url.rstrip("/"), "", "GET", "api/tags")
                 ids = {m.get("model") or m.get("name") for m in tags.get("models", [])}
@@ -227,7 +254,10 @@ async def _resolve_provider(model_id: str, cfg_svc: ProviderConfigService):
             except Exception:
                 pass
 
-    raise HTTPException(status_code=404, detail=f"Model '{model_id}' not found on any configured provider")
+    raise HTTPException(
+        status_code=404,
+        detail=f"Model '{model_id}' not found on any configured provider",
+    )
 
 
 async def _stream_to_socket(
@@ -246,15 +276,22 @@ async def _stream_to_socket(
     url = f"{base_url}/{path.lstrip('/')}"
 
     async def _emit(data: dict) -> None:
-        await emit_chat_event(user_id, {
-            "chat_id": chat_id,
-            "message_id": message_id,
-            "data": {"type": "chat:completion", "data": data},
-        })
+        await emit_chat_event(
+            user_id,
+            {
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "data": {"type": "chat:completion", "data": data},
+            },
+        )
 
     try:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(connect=10.0, read=300.0, write=30.0, pool=5.0)) as client:
-            async with client.stream("POST", url, json=llm_body, headers=headers) as response:
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(connect=10.0, read=300.0, write=30.0, pool=5.0)
+        ) as client:
+            async with client.stream(
+                "POST", url, json=llm_body, headers=headers
+            ) as response:
                 if response.status_code >= 400:
                     await response.aread()
                     await _emit({"error": {"message": response.text}, "done": True})
@@ -308,9 +345,17 @@ async def chat_completions(
     session_info = SESSION_POOL.get(session_id, {})
     target_user_id = session_info.get("user_id") or user.id
 
-    asyncio.create_task(_stream_to_socket(
-        llm_body, base_url, api_key, path, target_user_id, chat_id, message_id,
-    ))
+    asyncio.create_task(
+        _stream_to_socket(
+            llm_body,
+            base_url,
+            api_key,
+            path,
+            target_user_id,
+            chat_id,
+            message_id,
+        )
+    )
 
     return {"id": message_id, "object": "chat.completion.start", "model": model_id}
 
@@ -326,6 +371,7 @@ def get_base_models(
 
 # ── /api/changelog ────────────────────────────────────────────────────────────
 
+
 @router.get("/changelog")
 def get_changelog():
     return {}
@@ -333,12 +379,14 @@ def get_changelog():
 
 # ── /api/version/updates ──────────────────────────────────────────────────────
 
+
 @router.get("/version/updates")
 def get_version_updates():
     return {"current": settings.APP_VERSION, "latest": settings.APP_VERSION}
 
 
 # ── /api/config/model/filter ─────────────────────────────────────────────────
+
 
 @router.get("/config/model/filter")
 def get_model_filter(user: User = Depends(get_current_user)):
@@ -352,6 +400,7 @@ def update_model_filter(body: Dict[str, Any], user: User = Depends(get_current_u
 
 # ── /api/config/models ────────────────────────────────────────────────────────
 
+
 @router.get("/config/models")
 def get_models_config(user: User = Depends(get_current_user)):
     return {"models": []}
@@ -363,6 +412,7 @@ def update_models_config(body: Dict[str, Any], user: User = Depends(get_current_
 
 
 # ── /api/webhook ──────────────────────────────────────────────────────────────
+
 
 @router.get("/webhook")
 def get_webhook(user: User = Depends(get_current_user)):
@@ -376,6 +426,7 @@ def update_webhook(body: Dict[str, Any], user: User = Depends(get_current_user))
 
 # ── /api/community_sharing ───────────────────────────────────────────────────
 
+
 @router.get("/community_sharing")
 def get_community_sharing(user: User = Depends(get_current_user)):
     return False
@@ -387,6 +438,7 @@ def toggle_community_sharing(user: User = Depends(get_current_user)):
 
 
 # ── /api/tasks ────────────────────────────────────────────────────────────────
+
 
 @router.post("/tasks/stop/{task_id}")
 def stop_task(task_id: str, user: User = Depends(get_current_user)):

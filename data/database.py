@@ -10,6 +10,7 @@ from config import settings
 # Create declarative base for models (independent from open_webui)
 Base = declarative_base()
 
+
 def get_database_url() -> str:
     """Get database URL, creating SQLite directory if needed."""
     db_url = settings.DATABASE_URL

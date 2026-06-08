@@ -25,7 +25,12 @@ from providers.ollama_native import (
     upload_model_stream,
     UPLOAD_DIR,
 )
-from providers.proxy import proxy_json, proxy_stream, resolve_url_key, resolve_ollama_url
+from providers.proxy import (
+    proxy_json,
+    proxy_stream,
+    resolve_url_key,
+    resolve_ollama_url,
+)
 from providers.service import ProvidersService
 
 router = APIRouter(prefix="/providers", tags=["providers"])
@@ -50,6 +55,7 @@ async def list_providers(
 
 
 # ── OpenAI config ──────────────────────────────────────────────────────────────
+
 
 @router.get("/openai/config")
 async def get_openai_config(
@@ -125,6 +131,7 @@ async def verify_openai(
 
 # ── OpenAI proxy ───────────────────────────────────────────────────────────────
 
+
 @router.get("/openai/models")
 async def get_openai_models(
     current_user: User = Depends(get_current_user),
@@ -196,6 +203,7 @@ async def openai_audio_speech(
 
 # ── Ollama config ──────────────────────────────────────────────────────────────
 
+
 @router.get("/ollama/config")
 async def get_ollama_config(
     current_user: User = Depends(get_current_user),
@@ -247,6 +255,7 @@ async def verify_ollama(
 
 # ── Ollama discovery + chat ────────────────────────────────────────────────────
 
+
 @router.get("/ollama/api/version")
 @router.get("/ollama/api/version/{url_idx}")
 async def get_ollama_version(
@@ -276,9 +285,12 @@ async def get_ollama_version(
 
     def _ver_tuple(v):
         try:
-            return tuple(map(int, re.sub(r"^v|-.*", "", v.get("version", "0")).split(".")))
+            return tuple(
+                map(int, re.sub(r"^v|-.*", "", v.get("version", "0")).split("."))
+            )
         except Exception:
             return (0,)
+
     lowest = min(results, key=_ver_tuple)
     return {"version": lowest.get("version")}
 
@@ -368,6 +380,7 @@ async def ollama_chat(
 # The UI calls /ollama/models and /ollama/chat — these are thin wrappers over
 # the native Ollama API endpoints above.
 
+
 @router.get("/ollama/models")
 async def get_ollama_models(
     current_user: User = Depends(get_current_user),
@@ -416,6 +429,7 @@ async def ollama_chat_alias(
 
 # ── Ollama model management (admin-only isolated adapter) ──────────────────────
 
+
 @router.post("/ollama/api/pull")
 @router.post("/ollama/api/pull/{url_idx}")
 async def ollama_pull(
@@ -429,7 +443,9 @@ async def ollama_pull(
     if not cfg.get("ENABLE_OLLAMA_API"):
         raise HTTPException(status_code=503, detail="Ollama API is disabled")
     url = resolve_ollama_url(cfg, url_idx)
-    return StreamingResponse(pull_model_stream(url, body), media_type="application/x-ndjson")
+    return StreamingResponse(
+        pull_model_stream(url, body), media_type="application/x-ndjson"
+    )
 
 
 @router.post("/ollama/api/create")
@@ -445,7 +461,9 @@ async def ollama_create(
     if not cfg.get("ENABLE_OLLAMA_API"):
         raise HTTPException(status_code=503, detail="Ollama API is disabled")
     url = resolve_ollama_url(cfg, url_idx)
-    return StreamingResponse(create_model_stream(url, body), media_type="application/x-ndjson")
+    return StreamingResponse(
+        create_model_stream(url, body), media_type="application/x-ndjson"
+    )
 
 
 @router.delete("/ollama/api/delete")
@@ -491,7 +509,9 @@ async def ollama_download(
     file_url = body.get("url", "")
     allowed_hosts = ["https://huggingface.co/", "https://github.com/"]
     if not any(file_url.startswith(h) for h in allowed_hosts):
-        raise HTTPException(status_code=400, detail="Only HuggingFace and GitHub URLs are allowed")
+        raise HTTPException(
+            status_code=400, detail="Only HuggingFace and GitHub URLs are allowed"
+        )
     url = resolve_ollama_url(cfg, url_idx)
     # Simple pass-through to Ollama's pull with the HuggingFace URL
     return StreamingResponse(

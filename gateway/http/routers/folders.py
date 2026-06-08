@@ -19,20 +19,28 @@ def get_folder(folder_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/{folder_id}/update")
-def update_folder(folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_folder(
+    folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "id": folder_id}
 
 
 @router.post("/{folder_id}/update/expanded")
-def update_folder_expanded(folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_folder_expanded(
+    folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return body
 
 
 @router.post("/{folder_id}/update/items")
-def update_folder_items(folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_folder_items(
+    folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return body
 
 
 @router.post("/{folder_id}/update/parent")
-def update_folder_parent(folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_folder_parent(
+    folder_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return body

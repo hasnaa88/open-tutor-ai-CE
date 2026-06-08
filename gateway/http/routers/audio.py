@@ -37,19 +37,27 @@ class AudioConfigUpdate(BaseModel):
 
 # ── Admin-only: config ────────────────────────────────────────────────────────
 
+
 @router.get("/config")
-def get_config(user: User = Depends(get_current_user), svc: AudioService = Depends(_svc)):
+def get_config(
+    user: User = Depends(get_current_user), svc: AudioService = Depends(_svc)
+):
     _require_admin(user)
     return svc.get_config()
 
 
 @router.post("/config/update")
-def update_config(body: AudioConfigUpdate, user: User = Depends(get_current_user), svc: AudioService = Depends(_svc)):
+def update_config(
+    body: AudioConfigUpdate,
+    user: User = Depends(get_current_user),
+    svc: AudioService = Depends(_svc),
+):
     _require_admin(user)
     return svc.update_config(body.model_dump(exclude_none=True))
 
 
 # ── Verified user: transcriptions, speech, models, voices ────────────────────
+
 
 @router.post("/transcriptions")
 async def transcribe(
@@ -61,12 +69,21 @@ async def transcribe(
     url = (cfg.get("url") or "").rstrip("/")
     key = cfg.get("key") or ""
     if not url:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Audio STT URL not configured")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Audio STT URL not configured",
+        )
     async with httpx.AsyncClient(timeout=120) as client:
         r = await client.post(
             f"{url}/v1/audio/transcriptions",
             headers={"Authorization": f"Bearer {key}"},
-            files={"file": (file.filename, await file.read(), file.content_type or "audio/mpeg")},
+            files={
+                "file": (
+                    file.filename,
+                    await file.read(),
+                    file.content_type or "audio/mpeg",
+                )
+            },
             data={"model": cfg.get("model") or "whisper-1"},
         )
     if r.status_code >= 400:
@@ -84,7 +101,10 @@ async def synthesize_speech(
     url = (cfg.get("url") or "").rstrip("/")
     key = cfg.get("key") or ""
     if not url:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Audio TTS URL not configured")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Audio TTS URL not configured",
+        )
     async with httpx.AsyncClient(timeout=120) as client:
         r = await client.post(
             f"{url}/v1/audio/speech",
@@ -97,14 +117,20 @@ async def synthesize_speech(
         )
     if r.status_code >= 400:
         raise HTTPException(status_code=r.status_code, detail=r.text)
-    return Response(content=r.content, media_type=r.headers.get("content-type", "audio/mpeg"))
+    return Response(
+        content=r.content, media_type=r.headers.get("content-type", "audio/mpeg")
+    )
 
 
 @router.get("/models")
-def get_models(user: User = Depends(get_current_user), svc: AudioService = Depends(_svc)):
+def get_models(
+    user: User = Depends(get_current_user), svc: AudioService = Depends(_svc)
+):
     return svc.get_models()
 
 
 @router.get("/voices")
-def get_voices(user: User = Depends(get_current_user), svc: AudioService = Depends(_svc)):
+def get_voices(
+    user: User = Depends(get_current_user), svc: AudioService = Depends(_svc)
+):
     return svc.get_voices()

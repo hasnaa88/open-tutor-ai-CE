@@ -19,9 +19,11 @@ class SupportRepository(BaseRepository[Support]):
         return query.order_by(Support.created_at.desc()).all()
 
     def get_files(self, support_id: str) -> List[SupportFile]:
-        return self.session.query(SupportFile).filter(
-            SupportFile.support_id == support_id
-        ).all()
+        return (
+            self.session.query(SupportFile)
+            .filter(SupportFile.support_id == support_id)
+            .all()
+        )
 
     def add_file(self, file: SupportFile) -> SupportFile:
         self.session.add(file)

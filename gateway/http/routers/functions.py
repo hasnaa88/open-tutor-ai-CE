@@ -29,7 +29,9 @@ def get_function(function_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/id/{function_id}/update")
-def update_function(function_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_function(
+    function_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "id": function_id}
 
 
@@ -59,7 +61,9 @@ def get_valves_spec(function_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/id/{function_id}/valves/update")
-def update_valves(function_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_valves(
+    function_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return body
 
 
@@ -74,5 +78,7 @@ def get_user_valves_spec(function_id: str, user: User = Depends(get_current_user
 
 
 @router.post("/id/{function_id}/valves/user/update")
-def update_user_valves(function_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_user_valves(
+    function_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return body

@@ -20,10 +20,12 @@ class KnowledgeRepository:
         return self.db.query(KnowledgeBase).filter(KnowledgeBase.id == id).first()
 
     def list_by_user(self, user_id: str) -> List[KnowledgeBase]:
-        return (self.db.query(KnowledgeBase)
-                .filter(KnowledgeBase.user_id == user_id)
-                .order_by(KnowledgeBase.created_at.desc())
-                .all())
+        return (
+            self.db.query(KnowledgeBase)
+            .filter(KnowledgeBase.user_id == user_id)
+            .order_by(KnowledgeBase.created_at.desc())
+            .all()
+        )
 
     def update(self, id: str, **kwargs) -> Optional[KnowledgeBase]:
         kb = self.get(id)
@@ -51,10 +53,14 @@ class KnowledgeRepository:
         return kf
 
     def remove_file(self, knowledge_id: str, file_id: str) -> bool:
-        kf = (self.db.query(KnowledgeFile)
-              .filter(KnowledgeFile.knowledge_id == knowledge_id,
-                      KnowledgeFile.file_id == file_id)
-              .first())
+        kf = (
+            self.db.query(KnowledgeFile)
+            .filter(
+                KnowledgeFile.knowledge_id == knowledge_id,
+                KnowledgeFile.file_id == file_id,
+            )
+            .first()
+        )
         if not kf:
             return False
         self.db.delete(kf)
@@ -62,13 +68,17 @@ class KnowledgeRepository:
         return True
 
     def list_files(self, knowledge_id: str) -> List[KnowledgeFile]:
-        return (self.db.query(KnowledgeFile)
-                .filter(KnowledgeFile.knowledge_id == knowledge_id)
-                .all())
+        return (
+            self.db.query(KnowledgeFile)
+            .filter(KnowledgeFile.knowledge_id == knowledge_id)
+            .all()
+        )
 
     def clear_files(self, knowledge_id: str) -> int:
-        n = (self.db.query(KnowledgeFile)
-             .filter(KnowledgeFile.knowledge_id == knowledge_id)
-             .delete())
+        n = (
+            self.db.query(KnowledgeFile)
+            .filter(KnowledgeFile.knowledge_id == knowledge_id)
+            .delete()
+        )
         self.db.commit()
         return n

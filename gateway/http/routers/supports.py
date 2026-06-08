@@ -3,7 +3,17 @@
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -187,9 +197,13 @@ async def get_support(
 ):
     support = svc.get(support_id)
     if not support:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Support not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Support not found"
+        )
     if support.user_id != current_user.id and not current_user.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+        )
     files = svc.repo.get_files(support_id)
     return _to_response(support, files=files)
 
@@ -202,10 +216,14 @@ async def update_chat_id(
     svc: SupportsService = Depends(get_supports_service),
 ):
     if not chat_id:
-        raise HTTPException(status_code=400, detail="chat_id query parameter is required")
+        raise HTTPException(
+            status_code=400, detail="chat_id query parameter is required"
+        )
     support = svc.get(support_id)
     if not support or support.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Support not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Support not found"
+        )
     updated = svc.update_chat_id(support_id, chat_id)
     return {"id": updated.id, "chat_id": updated.chat_id, "status": "success"}
 
@@ -219,7 +237,9 @@ async def update_support(
 ):
     support = svc.get(support_id)
     if not support or support.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Support not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Support not found"
+        )
     updated = svc.update(support_id, data.model_dump())
     return _to_response(updated)
 
@@ -232,6 +252,8 @@ async def delete_support(
 ):
     support = svc.get(support_id)
     if not support or support.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Support not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Support not found"
+        )
     svc.delete(support_id)
     return JSONResponse(content={"status": "success", "message": "Support deleted"})

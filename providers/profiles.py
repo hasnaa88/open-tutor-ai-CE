@@ -8,6 +8,7 @@ from typing import Dict, List
 @dataclass(frozen=True)
 class ProviderProfile:
     """Describes one inference provider. Declarative — no client construction here."""
+
     name: str
     display_name: str
     default_base_urls: tuple = ()
@@ -27,7 +28,9 @@ REGISTRY: Dict[str, ProviderProfile] = {
     "openai": ProviderProfile(
         name="openai",
         display_name="OpenAI-Compatible",
-        default_base_urls=tuple(_env_list("OPENAI_API_BASE_URL", "https://api.openai.com/v1")),
+        default_base_urls=tuple(
+            _env_list("OPENAI_API_BASE_URL", "https://api.openai.com/v1")
+        ),
         transport="openai_chat",
     ),
     "ollama": ProviderProfile(

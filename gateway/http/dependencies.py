@@ -18,6 +18,7 @@ security = HTTPBearer()
 
 # ── Auth guard ────────────────────────────────────────────────────────────────
 
+
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
@@ -31,32 +32,42 @@ async def get_current_user(
         )
         user_id: str = payload.get("sub")
         if user_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="Invalid authentication credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials",
+            )
     except InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Invalid authentication credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+        )
 
     user = IdentityService(db).get_user(user_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
+        )
     return user
 
 
 # ── JWT helper ───────────────────────────────────────────────────────────────
 
+
 def decode_jwt_token(token: str) -> dict | None:
     """Decode a JWT token string. Returns payload dict or None if invalid."""
     try:
         import jwt
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+
+        payload = jwt.decode(
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
         return payload
     except Exception:
         return None
 
 
 # ── Service factories ─────────────────────────────────────────────────────────
+
 
 def get_identity_service(db: Session = Depends(get_db)) -> IdentityService:
     return IdentityService(db)

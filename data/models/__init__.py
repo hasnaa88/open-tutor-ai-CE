@@ -8,6 +8,14 @@ from .config import AppConfig
 from .knowledge import KnowledgeBase, KnowledgeFile
 
 __all__ = [
-    "User", "Support", "SupportFile", "Feedback", "FileRecord",
-    "Chat", "ModelConfig", "AppConfig", "KnowledgeBase", "KnowledgeFile",
+    "User",
+    "Support",
+    "SupportFile",
+    "Feedback",
+    "FileRecord",
+    "Chat",
+    "ModelConfig",
+    "AppConfig",
+    "KnowledgeBase",
+    "KnowledgeFile",
 ]

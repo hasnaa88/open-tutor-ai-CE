@@ -20,6 +20,7 @@ def get_files_service(db: Session = Depends(get_db)) -> FilesService:
 
 # ── Upload ────────────────────────────────────────────────────────────────────
 
+
 @router.post("/")
 async def upload_file(
     request: Request,
@@ -69,6 +70,7 @@ async def upload_dir(
 
 # ── List / Get ────────────────────────────────────────────────────────────────
 
+
 @router.get("/")
 async def get_files(
     current_user: User = Depends(get_current_user),
@@ -113,6 +115,7 @@ async def get_file_content(
 
 # ── Update ────────────────────────────────────────────────────────────────────
 
+
 @router.post("/{file_id}/data/content/update")
 async def update_file_content(
     file_id: str,
@@ -131,6 +134,7 @@ async def update_file_content(
 
 
 # ── Delete ────────────────────────────────────────────────────────────────────
+
 
 @router.delete("/all")
 async def delete_all_files(

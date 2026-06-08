@@ -18,7 +18,10 @@ def client():
 
 
 def _admin_token(client):
-    r = client.post("/auths/signup", json={"email": "rt@t.com", "name": "RT", "password": "pass1234!"})
+    r = client.post(
+        "/auths/signup",
+        json={"email": "rt@t.com", "name": "RT", "password": "pass1234!"},
+    )
     return r.json()["token"]
 
 
@@ -52,7 +55,9 @@ async def test_connect_rejects_invalid_token():
 
     SESSION_POOL.clear()
     with patch("gateway.realtime.socket.decode_jwt_token", return_value=None):
-        result = await connect("sid_bad_token", {"QUERY_STRING": "token=bad"}, auth=None)
+        result = await connect(
+            "sid_bad_token", {"QUERY_STRING": "token=bad"}, auth=None
+        )
     assert result is False
     assert "sid_bad_token" not in SESSION_POOL
 
@@ -62,11 +67,19 @@ async def test_connect_accepts_valid_token():
     from gateway.realtime.socket import connect, SESSION_POOL, sio
 
     SESSION_POOL.clear()
-    with patch("gateway.realtime.socket.decode_jwt_token", return_value={"sub": "u1", "email": "a@b.com"}):
+    with patch(
+        "gateway.realtime.socket.decode_jwt_token",
+        return_value={"sub": "u1", "email": "a@b.com"},
+    ):
         with patch.object(sio, "enter_room", new_callable=AsyncMock):
             with patch.object(sio, "save_session", new_callable=AsyncMock):
-                with patch("gateway.realtime.socket._broadcast_user_list", new_callable=AsyncMock):
-                    result = await connect("sid_valid", {"QUERY_STRING": "token=good"}, auth=None)
+                with patch(
+                    "gateway.realtime.socket._broadcast_user_list",
+                    new_callable=AsyncMock,
+                ):
+                    result = await connect(
+                        "sid_valid", {"QUERY_STRING": "token=good"}, auth=None
+                    )
     assert result is True
     assert SESSION_POOL["sid_valid"]["user_id"] == "u1"
 
@@ -83,14 +96,19 @@ async def test_user_join_adds_to_session_pool():
     SESSION_POOL.clear()
 
     # Mock the broadcast function and sio.enter_room
-    with patch("gateway.realtime.socket._broadcast_user_list", new_callable=AsyncMock) as mock_broadcast:
+    with patch(
+        "gateway.realtime.socket._broadcast_user_list", new_callable=AsyncMock
+    ) as mock_broadcast:
         with patch.object(sio, "enter_room", new_callable=AsyncMock) as mock_enter_room:
             # Create a mock sid
             sid = "test_sid_user_join"
 
             # Mock decode_jwt_token to return a valid user
             with patch("gateway.realtime.socket.decode_jwt_token") as mock_decode:
-                mock_decode.return_value = {"sub": "user123", "email": "test@example.com"}
+                mock_decode.return_value = {
+                    "sub": "user123",
+                    "email": "test@example.com",
+                }
 
                 # Call the user_join handler directly
                 await socket_module.user_join(sid, {"auth": {"token": "fake_token"}})
@@ -111,9 +129,15 @@ async def test_disconnect_removes_from_session_pool_and_broadcasts():
 
     # Pre-populate session pool
     sid = "test_sid_disconnect"
-    SESSION_POOL[sid] = {"user_id": "user123", "email": "test@example.com", "last_seen_at": 123456}
+    SESSION_POOL[sid] = {
+        "user_id": "user123",
+        "email": "test@example.com",
+        "last_seen_at": 123456,
+    }
 
-    with patch("gateway.realtime.socket._broadcast_user_list", new_callable=AsyncMock) as mock_broadcast:
+    with patch(
+        "gateway.realtime.socket._broadcast_user_list", new_callable=AsyncMock
+    ) as mock_broadcast:
         # Call disconnect handler directly
         await socket_module.disconnect(sid)
 
@@ -131,12 +155,18 @@ async def test_usage_updates_usage_pool():
 
     # Pre-populate session pool (required by usage handler)
     sid = "test_sid_usage"
-    SESSION_POOL[sid] = {"user_id": "user123", "email": "test@example.com", "last_seen_at": 123456}
+    SESSION_POOL[sid] = {
+        "user_id": "user123",
+        "email": "test@example.com",
+        "last_seen_at": 123456,
+    }
 
     # Clear usage pool
     USAGE_POOL.clear()
 
-    with patch("gateway.realtime.socket._broadcast_usage", new_callable=AsyncMock) as mock_broadcast:
+    with patch(
+        "gateway.realtime.socket._broadcast_usage", new_callable=AsyncMock
+    ) as mock_broadcast:
         # Call usage handler directly
         await socket_module.usage(sid, {"model": "llama3"})
 
@@ -158,7 +188,11 @@ async def test_heartbeat_updates_last_seen():
     # Pre-populate session pool
     sid = "test_sid_heartbeat"
     original_time = 123456
-    SESSION_POOL[sid] = {"user_id": "user123", "email": "test@example.com", "last_seen_at": original_time}
+    SESSION_POOL[sid] = {
+        "user_id": "user123",
+        "email": "test@example.com",
+        "last_seen_at": original_time,
+    }
 
     # Call heartbeat handler directly
     await socket_module.heartbeat(sid, {})
@@ -174,13 +208,16 @@ async def test_chat_events_handler():
 
     # Pre-populate session pool
     sid = "test_sid_chat"
-    SESSION_POOL[sid] = {"user_id": "user123", "email": "test@example.com", "last_seen_at": 123456}
+    SESSION_POOL[sid] = {
+        "user_id": "user123",
+        "email": "test@example.com",
+        "last_seen_at": 123456,
+    }
 
     # Call chat events handler - should not raise
-    await socket_module.chat_events(sid, {
-        "chat_id": "chat123",
-        "data": {"type": "last_read_at"}
-    })
+    await socket_module.chat_events(
+        sid, {"chat_id": "chat123", "data": {"type": "last_read_at"}}
+    )
 
     # No exception means test passes
 
@@ -192,7 +229,11 @@ async def test_channel_events_typing_broadcasts():
 
     # Pre-populate session pool
     sid = "test_sid_channel"
-    SESSION_POOL[sid] = {"user_id": "user123", "email": "test@example.com", "last_seen_at": 123456}
+    SESSION_POOL[sid] = {
+        "user_id": "user123",
+        "email": "test@example.com",
+        "last_seen_at": 123456,
+    }
 
     # Mock sio.manager.get_participants to return our sid
     mock_participants = [(sid, None)]
@@ -200,10 +241,13 @@ async def test_channel_events_typing_broadcasts():
     with patch.object(sio.manager, "get_participants", return_value=mock_participants):
         with patch.object(sio, "emit", new_callable=AsyncMock) as mock_emit:
             # Call channel events handler
-            await socket_module.channel_events(sid, {
-                "channel_id": "channel123",
-                "data": {"type": "typing", "content": "hello"}
-            })
+            await socket_module.channel_events(
+                sid,
+                {
+                    "channel_id": "channel123",
+                    "data": {"type": "typing", "content": "hello"},
+                },
+            )
 
             # Verify emit was called with events:channel
             mock_emit.assert_called_once()
@@ -245,7 +289,11 @@ def test_get_active_user_ids_deduplicates():
 
     SESSION_POOL.clear()
     SESSION_POOL["s1"] = {"user_id": "u1", "email": "a@b.com", "last_seen_at": 1}
-    SESSION_POOL["s2"] = {"user_id": "u1", "email": "a@b.com", "last_seen_at": 2}  # same user, two sids
+    SESSION_POOL["s2"] = {
+        "user_id": "u1",
+        "email": "a@b.com",
+        "last_seen_at": 2,
+    }  # same user, two sids
     SESSION_POOL["s3"] = {"user_id": "u2", "email": "c@d.com", "last_seen_at": 3}
 
     ids = get_active_user_ids()

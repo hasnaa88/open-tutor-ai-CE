@@ -50,4 +50,7 @@ class ImagesService:
         return current["image"]
 
     def get_models(self) -> list:
-        return [{"id": "dall-e-3", "name": "DALL-E 3"}, {"id": "dall-e-2", "name": "DALL-E 2"}]
+        return [
+            {"id": "dall-e-3", "name": "DALL-E 3"},
+            {"id": "dall-e-2", "name": "DALL-E 2"},
+        ]

@@ -104,8 +104,16 @@ class ProvidersService:
         oa = self.config.get_openai()
         ol = self.config.get_ollama()
         return [
-            {"id": "openai", "name": "OpenAI-Compatible", "enabled": bool(oa.get("ENABLE_OPENAI_API"))},
-            {"id": "ollama", "name": "Ollama", "enabled": bool(ol.get("ENABLE_OLLAMA_API"))},
+            {
+                "id": "openai",
+                "name": "OpenAI-Compatible",
+                "enabled": bool(oa.get("ENABLE_OPENAI_API")),
+            },
+            {
+                "id": "ollama",
+                "name": "Ollama",
+                "enabled": bool(ol.get("ENABLE_OLLAMA_API")),
+            },
         ]
 
     async def openai_models_map(self) -> dict:
@@ -137,8 +145,10 @@ class ProvidersService:
             return {"status": "error", "detail": "url required"}
         try:
             async with httpx.AsyncClient(timeout=5) as client:
-                r = await client.get(f"{url.rstrip('/')}/api/version",
-                                     headers={"Authorization": f"Bearer {key}"} if key else {})
+                r = await client.get(
+                    f"{url.rstrip('/')}/api/version",
+                    headers={"Authorization": f"Bearer {key}"} if key else {},
+                )
                 r.raise_for_status()
                 return {"status": "ok", "version": r.json().get("version")}
         except Exception as exc:

@@ -80,14 +80,21 @@ class RerankingUpdateRequest(BaseModel):
 
 # ── Admin-only: config, embedding, reranking ─────────────────────────────────
 
+
 @router.get("/config")
-def get_config(user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def get_config(
+    user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)
+):
     _require_admin(user)
     return svc.get_config()
 
 
 @router.post("/config/update")
-def update_config(body: RAGConfigUpdateRequest, user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def update_config(
+    body: RAGConfigUpdateRequest,
+    user: User = Depends(get_current_user),
+    svc: RetrievalService = Depends(_svc),
+):
     _require_admin(user)
     data = body.model_dump(exclude_none=True)
     for key in ("chunk", "content_extraction", "youtube", "file"):
@@ -97,25 +104,37 @@ def update_config(body: RAGConfigUpdateRequest, user: User = Depends(get_current
 
 
 @router.get("/embedding")
-def get_embedding(user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def get_embedding(
+    user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)
+):
     _require_admin(user)
     return svc.get_embedding()
 
 
 @router.post("/embedding/update")
-def update_embedding(body: EmbeddingUpdateRequest, user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def update_embedding(
+    body: EmbeddingUpdateRequest,
+    user: User = Depends(get_current_user),
+    svc: RetrievalService = Depends(_svc),
+):
     _require_admin(user)
     return svc.update_embedding(body.model_dump(exclude_none=True))
 
 
 @router.get("/reranking")
-def get_reranking(user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def get_reranking(
+    user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)
+):
     _require_admin(user)
     return svc.get_reranking()
 
 
 @router.post("/reranking/update")
-def update_reranking(body: RerankingUpdateRequest, user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def update_reranking(
+    body: RerankingUpdateRequest,
+    user: User = Depends(get_current_user),
+    svc: RetrievalService = Depends(_svc),
+):
     _require_admin(user)
     return svc.update_reranking(body.model_dump(exclude_none=True))
 
@@ -134,18 +153,27 @@ def reset_vector_db(user: User = Depends(get_current_user)):
 
 # ── Verified user: template, query settings, process, query ──────────────────
 
+
 @router.get("/template")
-def get_template(user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def get_template(
+    user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)
+):
     return {"template": svc.get_template()}
 
 
 @router.get("/query/settings")
-def get_query_settings(user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def get_query_settings(
+    user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)
+):
     return svc.get_query_settings()
 
 
 @router.post("/query/settings/update")
-def update_query_settings(body: QuerySettingsRequest, user: User = Depends(get_current_user), svc: RetrievalService = Depends(_svc)):
+def update_query_settings(
+    body: QuerySettingsRequest,
+    user: User = Depends(get_current_user),
+    svc: RetrievalService = Depends(_svc),
+):
     return svc.update_query_settings(body.model_dump(exclude_none=True))
 
 

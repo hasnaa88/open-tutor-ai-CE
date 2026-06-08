@@ -14,24 +14,24 @@ from typing import Dict, Set, Tuple
 # ── Paths with no UI fetch() client (health, auth bootstraps) ─────────────────
 # Tuples are (METHOD, path) — explicit so method-aware assertion works for these too.
 _REQUIRED_PATHS_FALLBACK: Set[Tuple[str, str]] = {
-    ("GET",  "/health"),
-    ("GET",  "/api/v1/auths/"),
+    ("GET", "/health"),
+    ("GET", "/api/v1/auths/"),
     ("POST", "/api/v1/auths/signin"),
-    ("GET",  "/api/v1/auths/signout"),
+    ("GET", "/api/v1/auths/signout"),
     ("POST", "/api/v1/auths/signup"),
 }
 
 # ── Map from JS constant name → backend path prefix ───────────────────────────
 _BASE_URL_MAP: Dict[str, str] = {
-    "OPENAI_API_BASE_URL":    "/api/v1/providers/openai",
-    "OLLAMA_API_BASE_URL":    "/api/v1/providers/ollama",
-    "WEBUI_API_BASE_URL":     "/api/v1",
-    "TUTOR_API_BASE_URL":     "/api/v1",
-    "WEBUI_BASE_URL":         "",
-    "TUTOR_BASE_URL":         "",
+    "OPENAI_API_BASE_URL": "/api/v1/providers/openai",
+    "OLLAMA_API_BASE_URL": "/api/v1/providers/ollama",
+    "WEBUI_API_BASE_URL": "/api/v1",
+    "TUTOR_API_BASE_URL": "/api/v1",
+    "WEBUI_BASE_URL": "",
+    "TUTOR_BASE_URL": "",
     "RETRIEVAL_API_BASE_URL": "/api/v1/retrieval",
-    "AUDIO_API_BASE_URL":     "/api/v1/audio",
-    "IMAGES_API_BASE_URL":    "/api/v1/images",
+    "AUDIO_API_BASE_URL": "/api/v1/audio",
+    "IMAGES_API_BASE_URL": "/api/v1/images",
 }
 
 # ── Open-webui features not yet ported to CE — skip rather than fail ──────────
@@ -197,7 +197,9 @@ def _normalize_path(raw: str) -> str:
     return path
 
 
-def _scan_ui_paths(apis_dir: Path, base_url_map: Dict[str, str]) -> Set[Tuple[str, str]]:
+def _scan_ui_paths(
+    apis_dir: Path, base_url_map: Dict[str, str]
+) -> Set[Tuple[str, str]]:
     """Extract (METHOD, path) pairs from fetch() calls in UI TypeScript API clients.
 
     Scans line-by-line: when a fetch(`${BASE_URL}/...`) is found, look ahead
@@ -284,8 +286,10 @@ def test_forbidden_patterns_absent(client):
     for pattern in FORBIDDEN_PATTERNS:
         required_prefix = ALLOWED_EXCEPTIONS.get(pattern)
         violating = [
-            p for p in registered
-            if pattern in p and (
+            p
+            for p in registered
+            if pattern in p
+            and (
                 required_prefix is None
                 or not (p.startswith(required_prefix) or p == required_prefix)
             )
@@ -307,23 +311,23 @@ def test_ui_scanner_finds_provider_paths(client):
     pairs = _scan_ui_paths(apis_dir, _BASE_URL_MAP)
     paths = {path for _, path in pairs}
     # OpenAI and Ollama config are always present in the UI
-    assert any("/providers/openai/config" in p for p in paths), (
-        f"Scanner should find openai/config path. Got: {sorted(paths)[:20]}"
-    )
-    assert any("/providers/ollama/config" in p for p in paths), (
-        f"Scanner should find ollama/config path. Got: {sorted(paths)[:20]}"
-    )
+    assert any(
+        "/providers/openai/config" in p for p in paths
+    ), f"Scanner should find openai/config path. Got: {sorted(paths)[:20]}"
+    assert any(
+        "/providers/ollama/config" in p for p in paths
+    ), f"Scanner should find ollama/config path. Got: {sorted(paths)[:20]}"
 
 
 # ── Forbidden paths test — detect legacy OpenWebUI paths in UI source ──────────
 # These patterns represent incomplete migration. They should NOT appear in UI source.
 
 _FORBIDDEN_UI_PATTERNS = [
-    "/api/chat",       # Legacy OpenWebUI chat namespace
-    "/ollama/",        # Legacy Ollama namespace (should be /api/v1/providers/ollama)
-    "/openai/",        # Legacy OpenAI namespace (should be /api/v1/providers/openai)
-    "/ws/socket",      # Legacy Socket.IO path (should be /realtime/socket.io)
-    "open_webui",      # No runtime imports allowed
+    "/api/chat",  # Legacy OpenWebUI chat namespace
+    "/ollama/",  # Legacy Ollama namespace (should be /api/v1/providers/ollama)
+    "/openai/",  # Legacy OpenAI namespace (should be /api/v1/providers/openai)
+    "/ws/socket",  # Legacy Socket.IO path (should be /realtime/socket.io)
+    "open_webui",  # No runtime imports allowed
 ]
 
 
@@ -360,15 +364,25 @@ def test_no_forbidden_paths_in_ui():
                             elif "fetch" not in line.lower():
                                 continue  # pure display string
                             # Legitimate provider path or base-URL variable expression
-                            if "/providers/ollama" in line or "/providers/openai" in line:
+                            if (
+                                "/providers/ollama" in line
+                                or "/providers/openai" in line
+                            ):
                                 continue
-                            if any(v in line for v in (
-                                "OLLAMA_API_BASE_URL", "TUTOR_BASE_URL",
-                                "TUTOR_API_BASE_URL", "WEBUI_BASE_URL",
-                                "WEBUI_API_BASE_URL",
-                            )):
+                            if any(
+                                v in line
+                                for v in (
+                                    "OLLAMA_API_BASE_URL",
+                                    "TUTOR_BASE_URL",
+                                    "TUTOR_API_BASE_URL",
+                                    "WEBUI_BASE_URL",
+                                    "WEBUI_API_BASE_URL",
+                                )
+                            ):
                                 continue
-                        violations.append((str(file.relative_to(ui_dir.parent)), pattern, line_num))
+                        violations.append(
+                            (str(file.relative_to(ui_dir.parent)), pattern, line_num)
+                        )
                 except Exception:
                     continue
 

@@ -55,7 +55,9 @@ class ModelsService:
             self.repo.session.rollback()
             raise ValidationError(f"Model '{model_id}' already exists", field="id")
 
-    def update(self, model_id: str, user_id: str, data: Dict[str, Any], is_admin: bool = False) -> ModelConfig:
+    def update(
+        self, model_id: str, user_id: str, data: Dict[str, Any], is_admin: bool = False
+    ) -> ModelConfig:
         model = self.repo.get_by_id(model_id)
         if not model:
             raise NotFoundError("ModelConfig", model_id)
@@ -71,7 +73,9 @@ class ModelsService:
             updated_at=datetime.utcnow(),
         )
 
-    def toggle(self, model_id: str, user_id: str, is_admin: bool = False) -> ModelConfig:
+    def toggle(
+        self, model_id: str, user_id: str, is_admin: bool = False
+    ) -> ModelConfig:
         model = self.repo.get_by_id(model_id)
         if not model:
             raise NotFoundError("ModelConfig", model_id)

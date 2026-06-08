@@ -61,14 +61,20 @@ class RetrievalService:
         cfg = self._get_config_record()
         current = dict(cfg.value or _DEFAULTS)
         # Top-level scalar fields
-        for key in ("pdf_extract_images", "enable_google_drive_integration", "web_loader_ssl_verification"):
+        for key in (
+            "pdf_extract_images",
+            "enable_google_drive_integration",
+            "web_loader_ssl_verification",
+        ):
             if key in data:
                 current[key] = data[key]
         # Nested objects — merge deeply
         for key in ("chunk", "content_extraction", "youtube"):
             if key in data and isinstance(data[key], dict):
                 current.setdefault(key, _DEFAULTS.get(key, {}).copy())
-                current[key].update({k: v for k, v in data[key].items() if v is not None})
+                current[key].update(
+                    {k: v for k, v in data[key].items() if v is not None}
+                )
         cfg.value = current
         self.db.commit()
         return current

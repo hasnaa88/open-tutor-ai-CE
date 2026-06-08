@@ -10,11 +10,15 @@ from config import settings
 from data.database import init_database
 
 from .routers import (
-    health, auth,
+    health,
+    auth,
     app_api as app_api_router,
-    supports, self_regulation, files,
+    supports,
+    self_regulation,
+    files,
     platform as platform_router,
-    users, configs as configs_router,
+    users,
+    configs as configs_router,
     models as models_router,
     providers as providers_router,
     chats as chats_router,

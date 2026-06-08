@@ -75,7 +75,7 @@ async def connect(sid: str, environ: dict, auth: dict | None = None):
         qs = environ.get("QUERY_STRING", "")
         for part in qs.split("&"):
             if part.startswith("token="):
-                token = part[len("token="):]
+                token = part[len("token=") :]
                 break
 
     if not token:
@@ -113,7 +113,11 @@ async def connect(sid: str, environ: dict, auth: dict | None = None):
 async def disconnect(sid: str):
     """Handle client disconnection. Remove from session pool and broadcast."""
     user = SESSION_POOL.pop(sid, None)
-    log.info("Socket.IO disconnected: sid=%s user=%s", sid, user.get("user_id") if user else None)
+    log.info(
+        "Socket.IO disconnected: sid=%s user=%s",
+        sid,
+        user.get("user_id") if user else None,
+    )
 
     # Broadcast updated user list
     await _broadcast_user_list()
@@ -122,7 +126,7 @@ async def disconnect(sid: str):
 @sio.on("user-join")
 async def user_join(sid: str, data: dict):
     """Handle user-join event. Track user in session pool and join user room.
-    
+
     Reference: open-webui/backend/open_webui/socket/main.py:user_join
     """
     auth = data.get("auth")
@@ -159,7 +163,7 @@ async def user_join(sid: str, data: dict):
 @sio.on("usage")
 async def usage(sid: str, data: dict):
     """Handle usage event. Track model usage in USAGE_POOL.
-    
+
     Reference: open-webui/backend/open_webui/socket/main.py:usage
     """
     if sid not in SESSION_POOL:
@@ -184,7 +188,7 @@ async def usage(sid: str, data: dict):
 @sio.on("heartbeat")
 async def heartbeat(sid: str, data: dict):
     """Handle heartbeat event. Keep session alive and update last_seen_at.
-    
+
     Reference: open-webui/backend/open_webui/socket/main.py:heartbeat
     """
     user = SESSION_POOL.get(sid)
@@ -216,7 +220,7 @@ async def emit_channel_event(channel_id: str, data: dict) -> None:
 @sio.on("events:chat")
 async def chat_events(sid: str, data: dict):
     """Handle chat events (e.g., last_read_at).
-    
+
     Reference: open-webui/backend/open_webui/socket/main.py:chat_events
     """
     user = SESSION_POOL.get(sid)
@@ -227,13 +231,18 @@ async def chat_events(sid: str, data: dict):
     event_type = event_data.get("type")
 
     # Currently just log - can be extended to update chat state in DB
-    log.debug("Chat event: type=%s chat_id=%s user=%s", event_type, data.get("chat_id"), user.get("user_id"))
+    log.debug(
+        "Chat event: type=%s chat_id=%s user=%s",
+        event_type,
+        data.get("chat_id"),
+        user.get("user_id"),
+    )
 
 
 @sio.on("events:channel")
 async def channel_events(sid: str, data: dict):
     """Handle channel events (typing, last_read_at).
-    
+
     Reference: open-webui/backend/open_webui/socket/main.py:channel_events
     """
     user = SESSION_POOL.get(sid)
@@ -267,4 +276,8 @@ async def channel_events(sid: str, data: dict):
         )
     elif event_type == "last_read_at":
         # Could update channel member last_read_at in DB
-        log.debug("Channel last_read_at: channel=%s user=%s", data.get("channel_id"), user.get("user_id"))
+        log.debug(
+            "Channel last_read_at: channel=%s user=%s",
+            data.get("channel_id"),
+            user.get("user_id"),
+        )

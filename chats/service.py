@@ -70,21 +70,24 @@ class ChatsService:
     def update(self, chat_id: str, user_id: str, chat_data: Dict[str, Any]) -> Chat:
         chat = self._require_owned(chat_id, user_id)
         title = chat_data.get("title", chat.title)
-        return self.repo.update(chat_id,
-                                title=title,
-                                chat=chat_data,
-                                updated_at=datetime.utcnow())
+        return self.repo.update(
+            chat_id, title=title, chat=chat_data, updated_at=datetime.utcnow()
+        )
 
     def archive(self, chat_id: str, user_id: str) -> Chat:
         chat = self._require_owned(chat_id, user_id)
-        return self.repo.update(chat_id, archived=not chat.archived, updated_at=datetime.utcnow())
+        return self.repo.update(
+            chat_id, archived=not chat.archived, updated_at=datetime.utcnow()
+        )
 
     def archive_all(self, user_id: str) -> int:
         return self.repo.archive_all(user_id)
 
     def pin(self, chat_id: str, user_id: str) -> Chat:
         chat = self._require_owned(chat_id, user_id)
-        return self.repo.update(chat_id, pinned=not chat.pinned, updated_at=datetime.utcnow())
+        return self.repo.update(
+            chat_id, pinned=not chat.pinned, updated_at=datetime.utcnow()
+        )
 
     def get_pinned_status(self, chat_id: str, user_id: str) -> bool:
         chat = self._require_owned(chat_id, user_id)
@@ -94,7 +97,9 @@ class ChatsService:
         chat = self._require_owned(chat_id, user_id)
         if chat.share_id:
             return chat
-        return self.repo.update(chat_id, share_id=str(uuid.uuid4()), updated_at=datetime.utcnow())
+        return self.repo.update(
+            chat_id, share_id=str(uuid.uuid4()), updated_at=datetime.utcnow()
+        )
 
     def unshare(self, chat_id: str, user_id: str) -> Chat:
         self._require_owned(chat_id, user_id)
@@ -102,7 +107,9 @@ class ChatsService:
 
     def set_folder(self, chat_id: str, user_id: str, folder_id: Optional[str]) -> Chat:
         self._require_owned(chat_id, user_id)
-        return self.repo.update(chat_id, folder_id=folder_id, updated_at=datetime.utcnow())
+        return self.repo.update(
+            chat_id, folder_id=folder_id, updated_at=datetime.utcnow()
+        )
 
     def get_tags(self, chat_id: str, user_id: str) -> List[dict]:
         chat = self._require_owned(chat_id, user_id)

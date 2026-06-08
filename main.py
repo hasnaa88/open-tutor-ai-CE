@@ -16,13 +16,16 @@ BANNER = r"""
  ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝       ╚═╝    ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═╝  ╚═╝  ╚═╝╚═╝
 """
 
+
 def main():
     """Console-script entry point — called by `open-tutorai` after pip install."""
     import uvicorn
     from config import settings
 
     print(BANNER)
-    print(f"v{settings.APP_VERSION} - empowering education through open-source AI tutoring")
+    print(
+        f"v{settings.APP_VERSION} - empowering education through open-source AI tutoring"
+    )
     if settings.BUILD_HASH != "dev-build":
         print(f"Commit: {settings.BUILD_HASH}")
     print("https://github.com/R2D-dev/open-tutor-ai-CE")

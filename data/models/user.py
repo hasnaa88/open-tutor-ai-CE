@@ -22,7 +22,9 @@ class User(Base):
     info = Column(JSON, nullable=True)
     role = Column(String(50), nullable=True, default="user")
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     # Relationships
     supports = relationship("Support", back_populates="user")
@@ -31,7 +33,10 @@ class User(Base):
     def to_dict(self) -> dict:
         """Convert user to dictionary."""
         import time as _time
-        created_ts = int(self.created_at.timestamp()) if self.created_at else int(_time.time())
+
+        created_ts = (
+            int(self.created_at.timestamp()) if self.created_at else int(_time.time())
+        )
         updated_ts = int(self.updated_at.timestamp()) if self.updated_at else created_ts
         return {
             "id": self.id,

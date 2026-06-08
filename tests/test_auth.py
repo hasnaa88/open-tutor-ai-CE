@@ -5,7 +5,11 @@
 def test_signup(client):
     response = client.post(
         "/auths/signup",
-        json={"email": "test@example.com", "name": "Test User", "password": "secure_password_123"},
+        json={
+            "email": "test@example.com",
+            "name": "Test User",
+            "password": "secure_password_123",
+        },
     )
     assert response.status_code == 200
     data = response.json()
@@ -17,11 +21,19 @@ def test_signup(client):
 def test_signup_duplicate_email(client):
     client.post(
         "/auths/signup",
-        json={"email": "test@example.com", "name": "Test User", "password": "secure_password_123"},
+        json={
+            "email": "test@example.com",
+            "name": "Test User",
+            "password": "secure_password_123",
+        },
     )
     response = client.post(
         "/auths/signup",
-        json={"email": "test@example.com", "name": "Another User", "password": "different_password_123"},
+        json={
+            "email": "test@example.com",
+            "name": "Another User",
+            "password": "different_password_123",
+        },
     )
     assert response.status_code == 400
     assert "already registered" in response.json()["detail"]
@@ -30,7 +42,11 @@ def test_signup_duplicate_email(client):
 def test_signin(client):
     client.post(
         "/auths/signup",
-        json={"email": "test@example.com", "name": "Test User", "password": "secure_password_123"},
+        json={
+            "email": "test@example.com",
+            "name": "Test User",
+            "password": "secure_password_123",
+        },
     )
     response = client.post(
         "/auths/signin",
@@ -46,7 +62,11 @@ def test_login_alias(client):
     """POST /auths/login is kept as alias for /auths/signin."""
     client.post(
         "/auths/signup",
-        json={"email": "test@example.com", "name": "Test User", "password": "secure_password_123"},
+        json={
+            "email": "test@example.com",
+            "name": "Test User",
+            "password": "secure_password_123",
+        },
     )
     response = client.post(
         "/auths/login",
@@ -59,7 +79,11 @@ def test_login_alias(client):
 def test_login_invalid_password(client):
     client.post(
         "/auths/signup",
-        json={"email": "test@example.com", "name": "Test User", "password": "secure_password_123"},
+        json={
+            "email": "test@example.com",
+            "name": "Test User",
+            "password": "secure_password_123",
+        },
     )
     response = client.post(
         "/auths/login",

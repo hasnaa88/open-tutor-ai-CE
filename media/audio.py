@@ -38,10 +38,17 @@ class AudioService:
         return current
 
     def get_models(self) -> list:
-        return [{"id": "tts-1", "name": "TTS-1"}, {"id": "tts-1-hd", "name": "TTS-1 HD"}]
+        return [
+            {"id": "tts-1", "name": "TTS-1"},
+            {"id": "tts-1-hd", "name": "TTS-1 HD"},
+        ]
 
     def get_voices(self) -> list:
         return [
-            {"id": "alloy"}, {"id": "echo"}, {"id": "fable"},
-            {"id": "onyx"}, {"id": "nova"}, {"id": "shimmer"},
+            {"id": "alloy"},
+            {"id": "echo"},
+            {"id": "fable"},
+            {"id": "onyx"},
+            {"id": "nova"},
+            {"id": "shimmer"},
         ]

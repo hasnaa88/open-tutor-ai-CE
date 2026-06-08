@@ -23,7 +23,8 @@ class UserUpdateRequest(BaseModel):
 
 @router.get("/")
 async def get_users(
-    skip: int = 0, limit: int = 50,
+    skip: int = 0,
+    limit: int = 50,
     current_user: User = Depends(get_current_user),
     svc: IdentityService = Depends(get_identity_service),
 ):
@@ -85,8 +86,17 @@ async def update_info(
 async def get_default_permissions(current_user: User = Depends(get_current_user)):
     return {
         "chat": {"deletion": True, "edit": True, "export": True},
-        "workspace": {"models": False, "knowledge": False, "prompts": False, "tools": False},
-        "features": {"web_search": False, "image_generation": False, "code_interpreter": False},
+        "workspace": {
+            "models": False,
+            "knowledge": False,
+            "prompts": False,
+            "tools": False,
+        },
+        "features": {
+            "web_search": False,
+            "image_generation": False,
+            "code_interpreter": False,
+        },
     }
 
 
@@ -112,7 +122,9 @@ async def update_user_role(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin only")
     user = svc.update_role(body.id, body.role)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return user.to_dict()
 
 
@@ -126,7 +138,9 @@ async def get_user(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     user = svc.get_user(user_id)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return user.to_dict()
 
 
@@ -142,7 +156,9 @@ async def update_user(
     updates = {k: v for k, v in body.model_dump().items() if v is not None}
     user = svc.update_user(user_id, **updates)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return user.to_dict()
 
 
@@ -155,8 +171,12 @@ async def delete_user(
     if not current_user.is_admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin only")
     if user_id == current_user.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete yourself")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete yourself"
+        )
     ok = svc.delete_user(user_id)
     if not ok:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return {"id": user_id}

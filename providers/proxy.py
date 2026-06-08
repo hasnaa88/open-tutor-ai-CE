@@ -19,7 +19,9 @@ def _auth_headers(key: str) -> Dict[str, str]:
 
 def resolve_url_key(cfg: Dict[str, Any], idx: Optional[int] = None) -> Tuple[str, str]:
     """Return (base_url, api_key) for the given index, or index 0 if idx is None."""
-    urls: List[str] = cfg.get("OPENAI_API_BASE_URLS") or cfg.get("OLLAMA_BASE_URLS") or []
+    urls: List[str] = (
+        cfg.get("OPENAI_API_BASE_URLS") or cfg.get("OLLAMA_BASE_URLS") or []
+    )
     keys: List[str] = cfg.get("OPENAI_API_KEYS", [])
     if not urls:
         raise HTTPException(status_code=503, detail="No upstream URLs configured")
@@ -87,7 +89,9 @@ async def proxy_stream(
     headers = {**_auth_headers(key), **(extra_headers or {})}
     url = f"{base_url}/{path.lstrip('/')}"
 
-    client = httpx.AsyncClient(timeout=httpx.Timeout(connect=10.0, read=TIMEOUT_STREAM, write=30.0, pool=5.0))
+    client = httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=10.0, read=TIMEOUT_STREAM, write=30.0, pool=5.0)
+    )
     try:
         request = client.build_request(method, url, json=body, headers=headers)
         response = await client.send(request, stream=True)

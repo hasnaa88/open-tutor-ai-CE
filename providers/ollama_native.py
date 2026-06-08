@@ -28,8 +28,12 @@ def calculate_sha256(file_path: str) -> str:
 
 async def pull_model_stream(url: str, payload: dict) -> AsyncIterator[bytes]:
     """Stream pull progress from Ollama /api/pull."""
-    async with httpx.AsyncClient(timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=5.0)) as client:
-        async with client.stream("POST", f"{url}/api/pull", json={**payload, "stream": True}) as r:
+    async with httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=5.0)
+    ) as client:
+        async with client.stream(
+            "POST", f"{url}/api/pull", json={**payload, "stream": True}
+        ) as r:
             r.raise_for_status()
             async for chunk in r.aiter_bytes():
                 yield chunk
@@ -37,7 +41,9 @@ async def pull_model_stream(url: str, payload: dict) -> AsyncIterator[bytes]:
 
 async def create_model_stream(url: str, payload: dict) -> AsyncIterator[bytes]:
     """Stream create progress from Ollama /api/create."""
-    async with httpx.AsyncClient(timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=5.0)) as client:
+    async with httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=5.0)
+    ) as client:
         async with client.stream("POST", f"{url}/api/create", json=payload) as r:
             r.raise_for_status()
             async for chunk in r.aiter_bytes():
@@ -52,7 +58,9 @@ async def delete_model(url: str, model: str) -> bool:
     return True
 
 
-async def upload_model_stream(url: str, file_path: str, filename: str) -> AsyncIterator[bytes]:
+async def upload_model_stream(
+    url: str, file_path: str, filename: str
+) -> AsyncIterator[bytes]:
     """Upload a local model file to Ollama: hash → push blob → create model.
 
     Yields SSE-style JSON progress events:
@@ -65,7 +73,9 @@ async def upload_model_stream(url: str, file_path: str, filename: str) -> AsyncI
     file_hash = calculate_sha256(file_path)
 
     # Push the blob
-    async with httpx.AsyncClient(timeout=httpx.Timeout(connect=10.0, read=600.0, write=600.0, pool=5.0)) as client:
+    async with httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=10.0, read=600.0, write=600.0, pool=5.0)
+    ) as client:
         with open(file_path, "rb") as f:
             blob_data = f.read()
         blob_url = f"{url}/api/blobs/sha256:{file_hash}"
@@ -78,7 +88,9 @@ async def upload_model_stream(url: str, file_path: str, filename: str) -> AsyncI
     # Create the model
     model_name, _ = os.path.splitext(filename)
     create_payload = {"model": model_name, "files": {filename: f"sha256:{file_hash}"}}
-    async with httpx.AsyncClient(timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=5.0)) as client:
+    async with httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=5.0)
+    ) as client:
         async with client.stream("POST", f"{url}/api/create", json=create_payload) as r:
             r.raise_for_status()
             async for chunk in r.aiter_bytes():

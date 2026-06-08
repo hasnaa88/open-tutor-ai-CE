@@ -23,9 +23,11 @@ class UserRepository(BaseRepository[User]):
 
     def search(self, query: str) -> List[User]:
         q = f"%{query}%"
-        return self.session.query(User).filter(
-            (User.name.ilike(q)) | (User.email.ilike(q))
-        ).all()
+        return (
+            self.session.query(User)
+            .filter((User.name.ilike(q)) | (User.email.ilike(q)))
+            .all()
+        )
 
     def update_settings(self, user_id: str, settings: Dict[str, Any]) -> Optional[User]:
         user = self.get_by_id(user_id)
@@ -49,7 +51,7 @@ class UserRepository(BaseRepository[User]):
         user = self.get_by_id(user_id)
         if not user:
             return None
-        user.is_admin = (role == "admin")
+        user.is_admin = role == "admin"
         user.role = role
         self.session.commit()
         self.session.refresh(user)

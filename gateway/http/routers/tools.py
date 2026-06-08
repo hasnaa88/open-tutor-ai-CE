@@ -34,7 +34,9 @@ def get_tool(tool_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/id/{tool_id}/update")
-def update_tool(tool_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_tool(
+    tool_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "id": tool_id}
 
 
@@ -54,7 +56,9 @@ def get_valves_spec(tool_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/id/{tool_id}/valves/update")
-def update_valves(tool_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_valves(
+    tool_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return body
 
 
@@ -69,5 +73,7 @@ def get_user_valves_spec(tool_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/id/{tool_id}/valves/user/update")
-def update_user_valves(tool_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_user_valves(
+    tool_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return body

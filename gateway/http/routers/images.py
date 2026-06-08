@@ -41,14 +41,21 @@ class ImageConfigUpdate(BaseModel):
 
 # ── Admin-only: config, verify, image config, models ─────────────────────────
 
+
 @router.get("/config")
-def get_config(user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)):
+def get_config(
+    user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)
+):
     _require_admin(user)
     return svc.get_config()
 
 
 @router.post("/config/update")
-def update_config(body: ImagesConfigUpdate, user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)):
+def update_config(
+    body: ImagesConfigUpdate,
+    user: User = Depends(get_current_user),
+    svc: ImagesService = Depends(_svc),
+):
     _require_admin(user)
     return svc.update_config(body.model_dump(exclude_none=True))
 
@@ -60,24 +67,33 @@ def verify_url(user: User = Depends(get_current_user)):
 
 
 @router.get("/image/config")
-def get_image_config(user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)):
+def get_image_config(
+    user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)
+):
     _require_admin(user)
     return svc.get_image_config()
 
 
 @router.post("/image/config/update")
-def update_image_config(body: ImageConfigUpdate, user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)):
+def update_image_config(
+    body: ImageConfigUpdate,
+    user: User = Depends(get_current_user),
+    svc: ImagesService = Depends(_svc),
+):
     _require_admin(user)
     return svc.update_image_config(body.model_dump(exclude_none=True))
 
 
 @router.get("/models")
-def get_models(user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)):
+def get_models(
+    user: User = Depends(get_current_user), svc: ImagesService = Depends(_svc)
+):
     _require_admin(user)
     return svc.get_models()
 
 
 # ── Verified user: generations ────────────────────────────────────────────────
+
 
 @router.post("/generations")
 async def generate_image(

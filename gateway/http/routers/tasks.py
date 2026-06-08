@@ -41,12 +41,16 @@ async def generate_emoji(body: Dict[str, Any], user: User = Depends(get_current_
 
 
 @router.post("/queries/completions")
-async def generate_queries(body: Dict[str, Any], user: User = Depends(get_current_user)):
+async def generate_queries(
+    body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {"choices": [{"message": {"content": "[]"}}]}
 
 
 @router.post("/auto/completions")
-async def auto_completions(body: Dict[str, Any], user: User = Depends(get_current_user)):
+async def auto_completions(
+    body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {"choices": [{"message": {"content": ""}}]}
 
 

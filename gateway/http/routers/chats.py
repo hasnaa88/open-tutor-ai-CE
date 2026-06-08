@@ -30,6 +30,7 @@ class TagRequest(BaseModel):
 
 # ── List endpoints ────────────────────────────────────────────────────────────
 
+
 @router.get("/")
 async def get_chats(
     page: Optional[int] = None,
@@ -146,6 +147,7 @@ async def get_folder_chats(
 
 # ── Share ─────────────────────────────────────────────────────────────────────
 
+
 @router.get("/share/{share_id}")
 async def get_shared_chat(
     share_id: str,
@@ -153,11 +155,14 @@ async def get_shared_chat(
 ):
     chat = svc.get_by_share_id(share_id)
     if not chat:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shared chat not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Shared chat not found"
+        )
     return chat.to_dict()
 
 
 # ── Create / Import ───────────────────────────────────────────────────────────
+
 
 @router.post("/new")
 async def create_chat(
@@ -179,6 +184,7 @@ async def import_chats(
 
 # ── Bulk actions ──────────────────────────────────────────────────────────────
 
+
 @router.delete("/")
 async def delete_all_chats(
     current_user: User = Depends(get_current_user),
@@ -198,6 +204,7 @@ async def archive_all(
 
 # ── Chat completion tracking (replaces /api/chat/completed) ───────────────────
 
+
 @router.post("/completed")
 async def chat_completed(
     body: Dict[str, Any],
@@ -205,7 +212,7 @@ async def chat_completed(
     svc: ChatsService = Depends(get_chats_service),
 ):
     """Record chat completion for analytics/tracking.
-    
+
     Reference: open-webui/backend/open_webui/routers/chats.py (legacy /api/chat/completed)
     """
     # Extract chat_id from body
@@ -218,6 +225,7 @@ async def chat_completed(
 
 # ── Chat actions (replaces /api/chat/actions/{action_id}) ────────────────────
 
+
 @router.post("/actions/{action_id}")
 async def chat_action(
     action_id: str,
@@ -226,7 +234,7 @@ async def chat_action(
     svc: ChatsService = Depends(get_chats_service),
 ):
     """Execute a chat action (title generation, summarization, etc.).
-    
+
     Reference: open-webui/backend/open_webui/routers/chats.py (legacy /api/chat/actions/{action_id})
     """
     # Placeholder - actual action handling depends on action_id
@@ -235,6 +243,7 @@ async def chat_action(
 
 
 # ── Per-chat CRUD ─────────────────────────────────────────────────────────────
+
 
 @router.get("/{id}")
 async def get_chat(
@@ -370,13 +379,16 @@ async def clone_shared_chat(
 ):
     chat = svc.get_by_share_id(id)
     if not chat:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shared chat not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Shared chat not found"
+        )
     cloned_data = dict(chat.chat or {})
     cloned_data["title"] = f"Clone of {chat.title}"
     return svc.create(current_user.id, cloned_data).to_dict()
 
 
 # ── Tags per chat ─────────────────────────────────────────────────────────────
+
 
 @router.get("/{id}/tags")
 async def get_chat_tags(

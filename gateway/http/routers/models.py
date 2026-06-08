@@ -55,7 +55,9 @@ async def get_model(
 ):
     model = svc.get(id)
     if not model:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Model not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Model not found"
+        )
     return model.to_dict()
 
 
@@ -67,7 +69,9 @@ async def update_model(
     svc: ModelsService = Depends(get_models_service),
 ):
     try:
-        return svc.update(id, current_user.id, body, is_admin=current_user.is_admin).to_dict()
+        return svc.update(
+            id, current_user.id, body, is_admin=current_user.is_admin
+        ).to_dict()
     except NotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message)
     except AuthorizationError as exc:
@@ -99,7 +103,9 @@ async def delete_model(
     except AuthorizationError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=exc.message)
     if not ok:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Model not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Model not found"
+        )
     return {"id": id}
 
 

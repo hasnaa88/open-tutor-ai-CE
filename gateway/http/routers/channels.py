@@ -24,7 +24,9 @@ def get_channel(channel_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/{channel_id}/update")
-def update_channel(channel_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_channel(
+    channel_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "id": channel_id}
 
 
@@ -44,7 +46,9 @@ def get_messages(
 
 
 @router.post("/{channel_id}/messages/post")
-def post_message(channel_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def post_message(
+    channel_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "id": "", "channel_id": channel_id, "user_id": user.id}
 
 
@@ -61,25 +65,36 @@ def get_message_thread(
 
 @router.post("/{channel_id}/messages/{message_id}/update")
 def update_message(
-    channel_id: str, message_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+    channel_id: str,
+    message_id: str,
+    body: Dict[str, Any],
+    user: User = Depends(get_current_user),
 ):
     return {**body, "id": message_id}
 
 
 @router.delete("/{channel_id}/messages/{message_id}/delete")
-def delete_message(channel_id: str, message_id: str, user: User = Depends(get_current_user)):
+def delete_message(
+    channel_id: str, message_id: str, user: User = Depends(get_current_user)
+):
     return {"id": message_id}
 
 
 @router.post("/{channel_id}/messages/{message_id}/reactions/add")
 def add_reaction(
-    channel_id: str, message_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+    channel_id: str,
+    message_id: str,
+    body: Dict[str, Any],
+    user: User = Depends(get_current_user),
 ):
     return body
 
 
 @router.post("/{channel_id}/messages/{message_id}/reactions/remove")
 def remove_reaction(
-    channel_id: str, message_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+    channel_id: str,
+    message_id: str,
+    body: Dict[str, Any],
+    user: User = Depends(get_current_user),
 ):
     return body

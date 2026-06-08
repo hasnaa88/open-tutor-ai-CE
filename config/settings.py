@@ -12,6 +12,7 @@ load_dotenv()  # Load .env before class body reads os.getenv — no-op in CI/Doc
 
 from typing import Optional, List
 
+
 class Settings:
     """Application settings loaded from environment variables."""
 
@@ -25,17 +26,18 @@ class Settings:
     LOG_LEVEL: str = os.getenv("GLOBAL_LOG_LEVEL", "INFO")
 
     # CORS configuration (no longer from open_webui)
-    _cors_origins_str = os.getenv("CORS_ALLOW_ORIGIN", "http://localhost:3000,http://localhost:5173")
-    CORS_ORIGINS: tuple = tuple(o.strip() for o in _cors_origins_str.split(",") if o.strip())
+    _cors_origins_str = os.getenv(
+        "CORS_ALLOW_ORIGIN", "http://localhost:3000,http://localhost:5173"
+    )
+    CORS_ORIGINS: tuple = tuple(
+        o.strip() for o in _cors_origins_str.split(",") if o.strip()
+    )
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_METHODS: tuple = ("*",)
     CORS_ALLOW_HEADERS: tuple = ("*",)
 
     # Database configuration
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL",
-        "sqlite:///./var/tutorai.db"
-    )
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./var/tutorai.db")
     DATABASE_ECHO: bool = DEBUG
 
     # Auth configuration
@@ -53,7 +55,9 @@ class Settings:
 
     # Vector database / RAG configuration
     VECTOR_DB_PATH: str = os.getenv("VECTOR_DB_PATH", "./var/vector_db")
-    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    EMBEDDING_MODEL: str = os.getenv(
+        "EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
+    )
 
     # Audio/TTS configuration
     AUDIO_TTS_ENGINE: str = os.getenv("AUDIO_TTS_ENGINE", "")
@@ -101,7 +105,10 @@ if not _jwt_secret:
 settings = Settings()
 
 # Validate production safety
-if not settings.DEBUG and settings.JWT_SECRET_KEY == "dev-secret-key-change-in-production":
+if (
+    not settings.DEBUG
+    and settings.JWT_SECRET_KEY == "dev-secret-key-change-in-production"
+):
     raise ValueError(
         "JWT_SECRET_KEY must be set via SECRET_KEY environment variable in production. "
         "Do not use default development key in production environments."

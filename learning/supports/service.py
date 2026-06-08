@@ -47,7 +47,9 @@ class SupportsService:
     def get(self, support_id: str) -> Optional[Support]:
         return self.repo.get_by_id(support_id)
 
-    def list_for_user(self, user_id: str, status: Optional[str] = None) -> List[Support]:
+    def list_for_user(
+        self, user_id: str, status: Optional[str] = None
+    ) -> List[Support]:
         return self.repo.get_by_user(user_id, status)
 
     def update(self, support_id: str, data: Dict[str, Any]) -> Support:
@@ -73,7 +75,9 @@ class SupportsService:
         )
 
     def update_chat_id(self, support_id: str, chat_id: str) -> Support:
-        return self.repo.update(support_id, chat_id=chat_id, updated_at=datetime.utcnow())
+        return self.repo.update(
+            support_id, chat_id=chat_id, updated_at=datetime.utcnow()
+        )
 
     def delete(self, support_id: str) -> None:
         self.repo.delete_files(support_id)

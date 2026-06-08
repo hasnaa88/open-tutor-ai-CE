@@ -47,7 +47,11 @@ class FilesService:
             content_type=content_type,
             size=len(contents),
             data=None,
-            meta={"content_type": content_type, "name": filename, "size": len(contents)},
+            meta={
+                "content_type": content_type,
+                "name": filename,
+                "size": len(contents),
+            },
             created_at=datetime.utcnow(),
         )
 

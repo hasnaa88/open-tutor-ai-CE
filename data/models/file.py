@@ -12,11 +12,11 @@ class FileRecord(Base):
     id = Column(String(36), primary_key=True)
     user_id = Column(String(36), nullable=False, index=True)
     filename = Column(Text, nullable=False)
-    path = Column(Text, nullable=True)           # disk path; None if content stored in data
+    path = Column(Text, nullable=True)  # disk path; None if content stored in data
     content_type = Column(String(255), nullable=True)
     size = Column(Integer, nullable=True)
-    data = Column(JSON, nullable=True)           # extracted text / structured content
-    meta = Column(JSON, nullable=True)           # arbitrary metadata (tags, source, …)
+    data = Column(JSON, nullable=True)  # extracted text / structured content
+    meta = Column(JSON, nullable=True)  # arbitrary metadata (tags, source, …)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     def to_dict(self) -> dict:

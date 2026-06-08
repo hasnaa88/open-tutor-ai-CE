@@ -87,9 +87,13 @@ async def sign_in(
     """Sign in — UI calls /auths/signin."""
     user = svc.authenticate(request.email, request.password)
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
     if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account inactive")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Account inactive"
+        )
     return _user_payload(_create_token(user.id), user)
 
 
@@ -192,6 +196,7 @@ async def update_password(
 
 
 # ── Admin config stubs ────────────────────────────────────────────────────────
+
 
 @router.get("/admin/details")
 async def get_admin_details(current_user: User = Depends(get_current_user)):

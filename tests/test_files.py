@@ -5,7 +5,9 @@ import io
 
 
 def _signup(client, email="files@test.com"):
-    r = client.post("/auths/signup", json={"email": email, "name": "U", "password": "pass1234!"})
+    r = client.post(
+        "/auths/signup", json={"email": email, "name": "U", "password": "pass1234!"}
+    )
     assert r.status_code == 200
     return r.json()["token"]
 
@@ -92,7 +94,10 @@ class TestFilesApiV1:
         assert r.status_code == 200
         assert r.json()["id"] == file_id
         # Confirm gone
-        assert client.get(f"/api/v1/files/{file_id}", headers=_auth(token)).status_code == 404
+        assert (
+            client.get(f"/api/v1/files/{file_id}", headers=_auth(token)).status_code
+            == 404
+        )
 
     def test_delete_all_files(self, client):
         """DELETE /api/v1/files/all  ← deleteAllFiles() in files/index.ts:217"""
@@ -109,4 +114,7 @@ class TestFilesApiV1:
         token_a = _signup(client, "owna@test.com")
         token_b = _signup(client, "ownb@test.com")
         file_id = _upload(client, token_a).json()["id"]
-        assert client.get(f"/api/v1/files/{file_id}", headers=_auth(token_b)).status_code == 403
+        assert (
+            client.get(f"/api/v1/files/{file_id}", headers=_auth(token_b)).status_code
+            == 403
+        )

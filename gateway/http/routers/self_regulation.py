@@ -17,6 +17,7 @@ _config: Dict[str, Any] = {}
 
 class FeedbackForm(BaseModel):
     """Flexible feedback payload matching OpenWebUI FeedbackForm convention."""
+
     data: Optional[Dict[str, Any]] = None
     meta: Optional[Dict[str, Any]] = None
     snapshot: Optional[Dict[str, Any]] = None
@@ -34,18 +35,22 @@ def _parse_form(form: FeedbackForm, feedback_type: str = "neutral") -> dict:
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
+
 @router.get("/config")
 async def get_config(current_user: User = Depends(get_current_user)):
     return _config
 
 
 @router.post("/config")
-async def update_config(config: Dict[str, Any], current_user: User = Depends(get_current_user)):
+async def update_config(
+    config: Dict[str, Any], current_user: User = Depends(get_current_user)
+):
     _config.update(config)
     return _config
 
 
 # ── Feedback CRUD ─────────────────────────────────────────────────────────────
+
 
 @router.get("/feedbacks/all")
 async def get_all_feedbacks(
@@ -82,9 +87,13 @@ async def get_feedback(
 ):
     feedback = svc.get(feedback_id)
     if not feedback:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found"
+        )
     if feedback.user_id != current_user.id and not current_user.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+        )
     return feedback.to_dict()
 
 
@@ -97,9 +106,13 @@ async def update_feedback(
 ):
     feedback = svc.get(feedback_id)
     if not feedback:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found"
+        )
     if feedback.user_id != current_user.id and not current_user.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+        )
     data = form.data or {}
     update_fields = {}
     if "rating" in data:
@@ -118,14 +131,19 @@ async def delete_feedback(
 ):
     feedback = svc.get(feedback_id)
     if not feedback:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found"
+        )
     if feedback.user_id != current_user.id and not current_user.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+        )
     svc.delete(feedback_id)
     return {"status": "success"}
 
 
 # ── Response-feedback (CC compat) ─────────────────────────────────────────────
+
 
 @router.get("/response-feedbacks/all")
 async def get_response_feedbacks(
@@ -155,5 +173,7 @@ async def get_response_feedback(
 ):
     feedback = svc.get(feedback_id)
     if not feedback:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Feedback not found"
+        )
     return feedback.to_dict()

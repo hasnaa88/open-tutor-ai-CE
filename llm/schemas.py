@@ -6,12 +6,14 @@ from pydantic import BaseModel
 
 class Message(BaseModel):
     """Chat message."""
+
     role: str  # user, assistant, system
     content: str
 
 
 class LLMRequest(BaseModel):
     """LLM completion request."""
+
     model: str
     messages: List[Message]
     temperature: Optional[float] = 0.7
@@ -22,6 +24,7 @@ class LLMRequest(BaseModel):
 
 class LLMResponse(BaseModel):
     """LLM completion response."""
+
     model: str
     completion: str
     stop_reason: Optional[str] = None

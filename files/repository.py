@@ -10,9 +10,12 @@ from data.repositories import BaseRepository
 class FileRepository(BaseRepository[FileRecord]):
 
     def get_by_user(self, user_id: str) -> List[FileRecord]:
-        return self.session.query(FileRecord).filter(
-            FileRecord.user_id == user_id
-        ).order_by(FileRecord.created_at.desc()).all()
+        return (
+            self.session.query(FileRecord)
+            .filter(FileRecord.user_id == user_id)
+            .order_by(FileRecord.created_at.desc())
+            .all()
+        )
 
     def delete_all_for_user(self, user_id: str) -> int:
         records = self.get_by_user(user_id)

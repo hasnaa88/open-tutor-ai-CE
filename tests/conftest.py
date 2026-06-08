@@ -2,6 +2,7 @@
 """Pytest configuration and fixtures."""
 
 import os
+
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-pytest")
 os.environ.setdefault("DEBUG", "true")
 
@@ -35,6 +36,7 @@ def db():
 @pytest.fixture
 def client(db):
     """Create test client."""
+
     def override_get_db():
         yield db
 

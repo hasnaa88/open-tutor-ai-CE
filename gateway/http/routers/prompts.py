@@ -29,7 +29,9 @@ def get_prompt_by_command(command: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/command/{command}/update")
-def update_prompt(command: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_prompt(
+    command: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "command": command}
 
 

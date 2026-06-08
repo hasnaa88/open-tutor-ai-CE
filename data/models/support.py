@@ -29,7 +29,9 @@ class Support(Base):
     chat_id = Column(String(36), nullable=True)
     status = Column(String(50), default="pending")
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     user = relationship("User", back_populates="supports")
 
@@ -63,7 +65,9 @@ class SupportFile(Base):
     __tablename__ = "support_files"
 
     id = Column(String(36), primary_key=True)
-    support_id = Column(String(36), ForeignKey("supports.id", ondelete="CASCADE"), nullable=False)
+    support_id = Column(
+        String(36), ForeignKey("supports.id", ondelete="CASCADE"), nullable=False
+    )
     filename = Column(String(255), nullable=False)
     file_path = Column(String(500), nullable=False)
     file_type = Column(String(100), nullable=True)

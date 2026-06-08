@@ -24,7 +24,9 @@ def get_group(group_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/id/{group_id}/update")
-def update_group(group_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_group(
+    group_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "id": group_id}
 
 

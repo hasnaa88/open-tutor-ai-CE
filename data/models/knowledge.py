@@ -16,7 +16,9 @@ class KnowledgeBase(Base):
     data = Column(JSON, nullable=True)
     meta = Column(JSON, nullable=True)  # stores access_control + tags
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     def to_dict(self) -> dict:
         return {
@@ -36,7 +38,9 @@ class KnowledgeFile(Base):
     __tablename__ = "knowledge_files"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    knowledge_id = Column(String(36), ForeignKey("knowledge_bases.id"), nullable=False, index=True)
+    knowledge_id = Column(
+        String(36), ForeignKey("knowledge_bases.id"), nullable=False, index=True
+    )
     file_id = Column(String(36), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 

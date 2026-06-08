@@ -29,7 +29,9 @@ def delete_user_memories(user: User = Depends(get_current_user)):
 
 
 @router.post("/{memory_id}/update")
-def update_memory(memory_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)):
+def update_memory(
+    memory_id: str, body: Dict[str, Any], user: User = Depends(get_current_user)
+):
     return {**body, "id": memory_id}
 
 
