@@ -82,6 +82,59 @@ Want to learn more about Open TutorAI's features? Check out our [Open TutorAI do
 
 Don't forget to explore our sibling project, [Open TutorAI Community](https://discord.gg/BTQtE2deEm), where you can discover, download, and explore customized Modelfiles. Open TutorAI Community offers a wide range of exciting possibilities for enhancing your chat interactions with Open TutorAI! 🚀
 
+## 🗂️ Project Structure
+
+```
+open-tutor-ai-CE/
+├── main.py                    ← Python entry point (uvicorn)
+│
+├── ── Backend ───────────────────────────────────────────────────────────
+├── config/                    ← App settings & constants
+├── common/                    ← Shared utilities (exceptions, logging)
+├── gateway/                   ← Transport layer
+│   ├── http/                  ← FastAPI app, dependencies, routers/
+│   └── realtime/              ← Socket.IO ASGI (/realtime/socket.io)
+├── data/                      ← ORM models, DB engine, base repository
+├── identity/                  ← Auth & user management
+├── chats/                     ← Chat CRUD, tags, sharing, search
+├── configs/                   ← App config KV store
+├── models/                    ← Model overlays
+├── providers/                 ← LLM providers (OpenAI + Ollama, Hermes-style)
+├── files/                     ← File upload & ownership
+├── knowledge/                 ← Knowledge base
+├── learning/supports/         ← Personalized tutoring supports
+├── self_regulation/           ← HITL feedback
+├── media/                     ← Audio (TTS/STT) + image generation
+├── retrieval/                 ← RAG pipeline
+├── llm/                       ← LLM transport base
+├── app_platform/              ← Version, changelog, banners
+├── tests/                     ← Pytest suite
+│
+├── ── Frontend ──────────────────────────────────────────────────────────
+├── ui/                        ← SvelteKit application
+│   ├── src/lib/apis/          ← API clients (one folder per domain)
+│   ├── src/lib/components/    ← Reusable Svelte components
+│   ├── src/lib/i18n/          ← Translations (AR / FR / EN)
+│   ├── src/routes/            ← File-based routing
+│   ├── static/                ← Assets (avatars, images, audio)
+│   └── cypress/               ← E2E tests
+│
+├── ── DevOps ────────────────────────────────────────────────────────────
+├── devops/
+│   ├── docker/                ← Dockerfiles + Docker Compose overlays
+│   └── scripts/               ← Dev & ops shell scripts
+│
+├── ── Project ───────────────────────────────────────────────────────────
+├── docs/                      ← Documentation
+├── kubernetes/                ← Helm charts
+├── .github/workflows/         ← CI/CD
+└── var/                       ← Runtime only, gitignored (DB, uploads, vector_db)
+```
+
+> Full structure with annotations: [MIGRATION.md](MIGRATION.md)
+
+---
+
 ## How to Install 🚀
 
 Below is a list of essential steps and resources to help you get started, manage, and develop with Open TutorAI.

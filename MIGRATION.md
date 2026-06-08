@@ -31,49 +31,112 @@ backend/
     config.py
 ```
 
-**After:**
+**After (v1.0.0):**
 ```
-main.py                        ← Uvicorn entry point; console script open-tutorai = "main:main"
-config/
-  settings.py
-common/
-  exceptions.py
-  logging.py
-gateway/
-  http/
-    app.py                     ← lifespan, CORS, SPA mount, router registration
-    dependencies.py            ← auth guard + service factories
-    routers/
-      health.py
-      auth.py                  ← /auths/* (root) + /api/v1/auths/* (versioned)
-      supports.py              ← /api/v1/supports/*
-      self_regulation.py       ← /api/v1/self_regulation/*
-      files.py                 ← /api/v1/files/*
-data/
-  database.py
-  models/
-    user.py
-    support.py                 ← SupportFile included
-    feedback.py
-    file.py                    ← FileRecord (generic file uploads)
-  repositories/
-    base.py
-identity/                      ← IdentityService, UserRepository
-learning/
-  supports/                    ← SupportsService, SupportRepository
-self_regulation/               ← SelfRegulationService, FeedbackRepository
-files/                         ← FilesService, FileRepository
-llm/                           ← transport base (OpenAI, Gemini, Ollama — foundation)
-providers/                     ← provider registry (foundation)
-  profiles.py                ← ProviderProfile dataclass + REGISTRY
-  config_service.py          ← AppConfig-backed config CRUD
-  proxy.py                   ← Unified async httpx helpers (proxy_json, proxy_stream)
-  service.py                 ← ProvidersService + model-list TTL cache
-  ollama_native.py           ← Isolated Ollama model-management adapter
-realtime/
-  socket.py                  ← Socket.IO AsyncServer + JWT auth; mounted at /realtime
-var/                           ← runtime only, gitignored: tutorai.db, uploads/, vector_db/
-ui/build/                      ← SvelteKit build output, served as SPA by gateway
+open-tutor-ai-CE/
+│
+├── main.py                        ← Uvicorn entry point
+│
+├── ── Backend (Python domains) ──────────────────────────────────────────
+│
+├── config/                        ← App settings & constants
+│   ├── settings.py
+│   └── constants.py
+│
+├── common/                        ← Shared utilities
+│   ├── exceptions.py
+│   └── logging.py
+│
+├── gateway/                       ← Transport layer (HTTP + Realtime)
+│   ├── http/
+│   │   ├── app.py                 ← lifespan, CORS, SPA mount, router registration
+│   │   ├── dependencies.py        ← auth guard + service factories
+│   │   └── routers/               ← one file per domain
+│   │       ├── auth.py            ← /auths/* + /api/v1/auths/*
+│   │       ├── users.py           ← /api/v1/users/*
+│   │       ├── chats.py           ← /api/v1/chats/*
+│   │       ├── configs.py         ← /api/v1/configs/*
+│   │       ├── models.py          ← /api/v1/models/*
+│   │       ├── providers.py       ← /api/v1/providers/*
+│   │       ├── files.py           ← /api/v1/files/*
+│   │       ├── supports.py        ← /api/v1/supports/*
+│   │       ├── self_regulation.py ← /api/v1/self_regulation/*
+│   │       ├── platform.py        ← /api/v1/platform/*
+│   │       ├── retrieval.py       ← /api/v1/retrieval/*
+│   │       ├── audio.py           ← /api/v1/audio/*
+│   │       └── images.py          ← /api/v1/images/*
+│   └── realtime/
+│       └── socket.py              ← Socket.IO ASGI; JWT auth; /realtime/socket.io
+│
+├── data/                          ← Data layer
+│   ├── database.py                ← SQLAlchemy engine + session factory
+│   ├── models/                    ← ORM models (one file per entity)
+│   └── repositories/
+│       └── base.py                ← Generic CRUD repository
+│
+├── identity/                      ← Domain: auth & users
+├── chats/                         ← Domain: chats
+├── configs/                       ← Domain: app config KV (AppConfig)
+├── models/                        ← Domain: model overlays
+├── providers/                     ← Domain: LLM providers (OpenAI + Ollama)
+│   ├── profiles.py                ← ProviderProfile registry
+│   ├── config_service.py          ← AppConfig-backed config CRUD
+│   ├── proxy.py                   ← Unified async httpx helpers
+│   ├── service.py                 ← ProvidersService + model-list TTL cache
+│   └── ollama_native.py           ← Ollama model-management adapter
+├── files/                         ← Domain: file upload & ownership
+├── knowledge/                     ← Domain: knowledge base
+├── learning/
+│   └── supports/                  ← Domain: personalized tutoring supports
+├── self_regulation/               ← Domain: HITL feedback
+├── media/                         ← Domain: audio (TTS/STT) + images
+├── retrieval/                     ← Domain: RAG pipeline
+├── llm/                           ← LLM transport base (OpenAI, Gemini, Ollama)
+├── app_platform/                  ← Domain: version / changelog / banners
+│
+├── tests/                         ← Pytest suite (one file per domain)
+│
+├── ── Frontend ──────────────────────────────────────────────────────────
+│
+├── ui/                            ← SvelteKit application
+│   ├── src/
+│   │   ├── lib/apis/              ← API clients (one folder per domain)
+│   │   ├── lib/components/        ← Reusable Svelte components
+│   │   ├── lib/i18n/              ← i18n translations (AR / FR / EN)
+│   │   └── routes/                ← SvelteKit file-based routing
+│   ├── static/                    ← Assets (avatars, images, audio)
+│   ├── cypress/                   ← E2E tests
+│   ├── .eslintrc.cjs
+│   ├── .prettierrc
+│   └── package.json
+│
+├── ── DevOps ────────────────────────────────────────────────────────────
+│
+├── devops/
+│   ├── docker/                    ← Dockerfiles + Docker Compose overlays
+│   │   ├── Dockerfile.backend     ← Multi-stage: Node build → Python serve
+│   │   ├── Dockerfile.frontend
+│   │   ├── docker-compose.yaml    ← Base stack (backend + Ollama)
+│   │   ├── docker-compose.gpu.yaml
+│   │   ├── docker-compose.amdgpu.yaml
+│   │   ├── docker-compose.api.yaml
+│   │   └── docker-compose.data.yaml
+│   └── scripts/                   ← Dev & ops shell scripts
+│       ├── dev.sh                 ← Local backend hot-reload
+│       ├── run.sh                 ← Build + run Docker container
+│       ├── run-compose.sh         ← Full Compose stack with GPU/API flags
+│       └── run-ollama-docker.sh   ← Start Ollama in Docker
+│
+├── ── Project ───────────────────────────────────────────────────────────
+│
+├── docs/                          ← Documentation
+├── kubernetes/                    ← Helm charts (in progress)
+├── .github/workflows/             ← CI/CD (backend format, frontend build, release)
+├── requirements.txt
+├── pyproject.toml
+├── Makefile
+├── .env.example
+└── var/                           ← Runtime only, gitignored (DB, uploads, vector_db)
 ```
 
 ### Dependency Changes
