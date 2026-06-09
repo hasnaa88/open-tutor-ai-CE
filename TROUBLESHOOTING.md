@@ -1,36 +1,145 @@
-# Open TutorAI Troubleshooting Guide
+# Open TutorAI — Troubleshooting
 
-## Understanding the Open TutorAI Architecture
+## Architecture recap
 
-The Open TutorAI system is designed to streamline interactions between the client (your browser) and the Ollama API. At the heart of this design is a backend reverse proxy, enhancing security and resolving CORS issues.
+The backend is a FastAPI application that:
+- Serves the SvelteKit frontend as static files at `/`
+- Exposes the REST API at `/api/v1/*`
+- Proxies Ollama traffic via `/api/v1/providers/ollama/*`
+- Handles real-time events at `/realtime/*` (Socket.IO)
 
-- **How it Works**: The Open TutorAI is designed to interact with the Ollama API through a specific route. When a request is made from the TutorAI to Ollama, it is not directly sent to the Ollama API. Initially, the request is sent to the Open TutorAI backend via `/ollama` route. From there, the backend is responsible for forwarding the request to the Ollama API. This forwarding is accomplished by using the route specified in the `OLLAMA_BASE_URL` environment variable. Therefore, a request made to `/ollama` in the TutorAI is effectively the same as making a request to `OLLAMA_BASE_URL` in the backend. For instance, a request to `/ollama/api/tags` in the TutorAI is equivalent to `OLLAMA_BASE_URL/api/tags` in the backend.
+All communication between the browser and Ollama goes through the backend — Ollama is never exposed directly to the frontend.
 
-- **Security Benefits**: This design prevents direct exposure of the Ollama API to the frontend, safeguarding against potential CORS (Cross-Origin Resource Sharing) issues and unauthorized access. Requiring authentication to access the Ollama API further enhances this security layer.
+---
 
-## Open TutorAI: Server Connection Error
+## Backend cannot reach Ollama
 
-If you're experiencing connection issues, it’s often due to the TutorAI docker container not being able to reach the Ollama server at 127.0.0.1:11434 (host.docker.internal:11434) inside the container . Use the `--network=host` flag in your docker command to resolve this. Note that the port changes from 3000 to 8080, resulting in the link: `http://localhost:8080`.
+### Docker Compose (recommended)
 
-**Example Docker Command**:
+Services share the internal `app-network`. The backend must use the **service name** as hostname:
 
 ```bash
-docker run -d --network=host -v open-webui:/app/backend/data -e OLLAMA_BASE_URL=http://127.0.0.1:11434 --name open-webui --restart always ghcr.io/open-webui/open-webui:main
+OLLAMA_BASE_URL=http://ollama:11434
 ```
 
-### Error on Slow Responses for Ollama
+This is already set in `devops/docker/docker-compose.yaml`.
 
-Open TutorAI has a default timeout of 5 minutes for Ollama to finish generating the response. If needed, this can be adjusted via the environment variable AIOHTTP_CLIENT_TIMEOUT, which sets the timeout in seconds.
+### Standalone Docker container
 
-### General Connection Errors
+`localhost` inside a container refers to the container itself, not the host. Use `--network=host` to share the host network:
 
-**Ensure Ollama Version is Up-to-Date**: Always start by checking that you have the latest version of Ollama. Visit [Ollama's official site](https://ollama.com/) for the latest updates.
+```bash
+docker run -d --network=host \
+  -v open-tutorai-var:/app/var \
+  -e OLLAMA_BASE_URL=http://127.0.0.1:11434 \
+  -e SECRET_KEY=$(openssl rand -hex 32) \
+  --name open-tutorai --restart always \
+  open-tutorai
+```
 
-**Troubleshooting Steps**:
+### Local development
 
-1. **Verify Ollama URL Format**:
-   - When running the Web UI container, ensure the `OLLAMA_BASE_URL` is correctly set. (e.g., `http://192.168.1.1:11434` for different host setups).
-   - In the Open TutorAI, navigate to "Settings" > "General".
-   - Confirm that the Ollama Server URL is correctly set to `[OLLAMA URL]` (e.g., `http://localhost:11434`).
+Ollama and the backend both run on your machine. Use:
 
-By following these enhanced troubleshooting steps, connection issues should be effectively resolved. For further assistance or queries, feel free to reach out to us on our community Discord.
+```bash
+OLLAMA_BASE_URL=http://localhost:11434
+```
+
+---
+
+## `SECRET_KEY must be set` on startup
+
+The backend refuses to start in production (`DEBUG=false`) without a strong secret key.
+
+**Solution — generate a key and add it to `.env`:**
+
+```bash
+echo "SECRET_KEY=$(openssl rand -hex 32)" >> .env
+```
+
+For local development, set `DEBUG=true` in `.env`. The placeholder key is then accepted.
+
+---
+
+## Database errors after an update
+
+If the schema changed, the old SQLite file may be incompatible.
+
+**Drop and recreate (dev only — all data is lost):**
+
+```bash
+rm var/tutorai.db
+```
+
+**For Docker volumes:**
+
+```bash
+docker compose -f devops/docker/docker-compose.yaml down -v
+docker compose -f devops/docker/docker-compose.yaml up --build
+```
+
+---
+
+## Slow or timed-out Ollama responses
+
+The default timeout for Ollama proxy requests is 5 minutes (300 seconds). The backend uses `httpx` for upstream calls — increase the timeout by setting in `.env`:
+
+```bash
+HTTPX_TIMEOUT=600   # seconds
+```
+
+---
+
+## Port conflicts
+
+| Service | Default port | How to change |
+|---------|-------------|---------------|
+| Backend / frontend | `8080` | Edit `ports` in `docker-compose.yaml` |
+| Ollama | `11434` | Set `OLLAMA_WEBAPI_PORT=<port>` in `.env` and use the `docker-compose.api.yaml` overlay |
+| Frontend dev server | `5173` | `npm run dev -- --port 5174` |
+
+---
+
+## Model not visible after pulling
+
+If you pulled a model while the backend was already running, the model list cache may be stale. Restart the backend:
+
+```bash
+# Docker Compose
+docker compose -f devops/docker/docker-compose.yaml restart open-tutorai
+
+# Standalone container
+docker restart open-tutorai
+```
+
+---
+
+## CORS errors in the browser
+
+Add your frontend origin to the `CORS_ALLOW_ORIGIN` variable:
+
+```bash
+CORS_ALLOW_ORIGIN=http://localhost:5173,https://your-domain.com
+```
+
+Wildcards (`*`) are supported but not recommended in production.
+
+---
+
+## Frontend shows blank page or 404
+
+The backend serves the built frontend from `ui/build/`. If that directory is missing:
+
+```bash
+cd ui && npm install && npm run build
+```
+
+Then restart the backend. In Docker, the build happens automatically in the multi-stage `devops/docker/Dockerfile.backend`.
+
+---
+
+## Still stuck?
+
+- Check the logs: `docker compose -f devops/docker/docker-compose.yaml logs -f`
+- Open an issue: [github.com/Open-TutorAi/open-tutor-ai-CE/issues](https://github.com/Open-TutorAi/open-tutor-ai-CE/issues)
+- Join the community: [Discord](https://discord.gg/BTQtE2deEm)

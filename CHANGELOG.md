@@ -2,8 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),  
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2026-06-08
+
+### Changed
+- 🏗️ **Root-driven architecture**: complete Python application rewrite — zero `open_webui` runtime dependency. Domains now use conventional root packages (`accounts`, `learning`, `ai`, `content`, `governance`, `system`, `gateway`, `data`, `common`, `config`).
+- ⚡ **Hermes-style provider layer**: OpenAI and Ollama proxied via `/api/v1/providers/*` with model-list TTL cache and admin-gated configuration.
+- 🔌 **Realtime Socket.IO**: remounted at `/realtime/socket.io` with JWT auth — replaces legacy `/ws/socket.io`.
+- 🎛️ **TutorAI Control Center**: new admin panel (system prompt, model config, banners) replacing OpenWebUI Settings.
+- 🔑 **Auth**: JWT-based authentication replacing OpenWebUI session tokens (`SECRET_KEY` replaces `WEBUI_SECRET_KEY`).
+- 🗄️ **Database**: SQLite default via direct SQLAlchemy (no OpenWebUI Base); runtime data isolated to `var/`.
+- 📋 **API versioning**: all routes under `/api/v1/*`; forbidden legacy namespaces (`/openai/`, `/ollama/`, `/api/chat/`) removed.
+
+### Added
+- ✅ **Contract test**: UI scanner (`test_contract_coverage.py`) dynamically verifies every frontend `fetch()` call has a matching API endpoint.
+- 🧩 **Full chat API**: CRUD, archive, pin, share, tags, search, clone, folder (`/api/v1/chats/*`).
+- 🤖 **Models overlay API**: custom model config with ownership gating (`/api/v1/models/*`).
+- 📡 **Platform API**: version, changelog, banners (`/api/v1/platform/*`).
+- 🔄 **Self-regulation domain**: renamed from `evaluations` — HITL feedback with export (`/api/v1/self_regulation/*`).
+- 🚦 **CI workflows**: updated for new structure — Python application Black formatting, frontend in `ui/`, release on tag push.
+
+### Removed
+- ❌ `open_webui` runtime dependency and all its imports.
+- ❌ Legacy namespaces: `/openai/*`, `/ollama/*`, `/api/chat/*`, `/ws/socket.io`.
+- ❌ `WEBUI_SECRET_KEY`, `SUPPRESS_WEBUI_BANNER` env vars.
+
+---
 
 ## [0.0.1] - 2025-05-12
 
@@ -22,8 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - ✅ Project setup initialized.
-- 🧭 Centralized App Launcher in `open_tutorai/main.py` (using `open_webui` as submodule).
-- 📁 Corrected data directory structure — now handled in backend, not `openweb-ui`.
+- 🧭 Centralized App Launcher in the initial `open_tutorai/main.py` prototype. This historical layout was removed in v1.0.0.
+- 📁 Corrected data directory structure — now handled by the Python application, not `openweb-ui`.
 
 ### Changed
 - 🎨 Updated OpenTutor AI interface and features.

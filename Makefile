@@ -5,29 +5,33 @@ else
     DOCKER_COMPOSE := docker compose
 endif
 
-install:
-	$(DOCKER_COMPOSE) up -d
+COMPOSE_FILE := devops/docker/docker-compose.yaml
 
-remove:
-	@chmod +x confirm_remove.sh
-	@./confirm_remove.sh
+install:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) up -d
 
 start:
-	$(DOCKER_COMPOSE) start
-startAndBuild: 
-	$(DOCKER_COMPOSE) up -d --build
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) start
+
+startAndBuild:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) up -d --build
 
 stop:
-	$(DOCKER_COMPOSE) stop
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) stop
 
 update:
-	# Calls the LLM update script
-	chmod +x update_ollama_models.sh
-	@./update_ollama_models.sh
 	@git pull
-	$(DOCKER_COMPOSE) down
-	# Make sure the ollama-webui container is stopped before rebuilding
-	@docker stop open-webui || true
-	$(DOCKER_COMPOSE) up --build -d
-	$(DOCKER_COMPOSE) start
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) down
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) up --build -d
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) start
 
+# ── Local development validation ─────────────────────────────────────────────
+
+lint:
+	~/.pyenv/versions/tutorai-env/bin/pre-commit run --all-files
+
+test:
+	~/.pyenv/versions/tutorai-env/bin/pytest -q --tb=short
+	cd ui && npm run test:frontend
+
+check: lint test

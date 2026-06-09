@@ -1,0 +1,46 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  open-tutorai:
+    build:
+      context: ..
+      dockerfile: devops/docker/Dockerfile.backend
+    image: open-tutorai
+    container_name: open-tutorai
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    volumes:
+      - ../var:/app/var
+    env_file:
+      - ../.env
+    # Mapping syntax avoids YAML list-parsing issues with interpolation strings.
+    # SECRET_KEY is validated at compose-up time: missing key = hard failure with
+    # a message that includes the generation command.
+    environment:
+      PYTHONUNBUFFERED: "1"
+      OLLAMA_BASE_URL: "http://ollama:11434"
+      SECRET_KEY: "${SECRET_KEY:?SECRET_KEY must be set in .env. Generate one with: echo SECRET_KEY=$(openssl rand -hex 32) >> .env}"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - app-network
+
+volumes:
+  ollama:

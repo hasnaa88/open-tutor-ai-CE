@@ -1,0 +1,20 @@
+# Global — reviewer par défaut sur tout le repo
+*                           @pr-elhajji
+
+# Backend — domaines métier
+/gateway/                   @pr-elhajji
+/identity/                  @pr-elhajji
+/chats/                     @pr-elhajji
+/providers/                 @pr-elhajji
+/knowledge/                 @pr-elhajji
+/learning/                  @pr-elhajji
+
+# Frontend
+/ui/                        @pr-elhajji
+
+# CI/DevOps — changements sensibles
+/.github/                   @pr-elhajji
+/devops/                    @pr-elhajji
+
+# Docs
+/docs/                      @pr-elhajji

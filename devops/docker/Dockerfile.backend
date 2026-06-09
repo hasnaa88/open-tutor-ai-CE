@@ -1,0 +1,122 @@
+# syntax=docker/dockerfile:1
+ARG USE_CUDA=false
+ARG USE_OLLAMA=false
+ARG USE_CUDA_VER=cu121
+ARG USE_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+ARG USE_RERANKING_MODEL=""
+ARG USE_TIKTOKEN_ENCODING_NAME="cl100k_base"
+ARG BUILD_HASH=dev-build
+ARG UID=0
+ARG GID=0
+
+# ── Stage 1: build SvelteKit frontend ────────────────────────────────────────
+FROM node:22-alpine AS frontend-builder
+
+WORKDIR /app/ui
+
+COPY ui/package*.json ./
+RUN npm ci
+
+COPY ui/ .
+
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+RUN npm run build
+
+
+# ── Stage 2: Python backend + built frontend ──────────────────────────────────
+FROM python:3.11-slim-bookworm AS base
+
+ARG USE_CUDA
+ARG USE_OLLAMA
+ARG USE_CUDA_VER
+ARG USE_EMBEDDING_MODEL
+ARG USE_RERANKING_MODEL
+ARG UID
+ARG GID
+
+ENV ENV=prod \
+    PORT=8080 \
+    USE_OLLAMA_DOCKER=${USE_OLLAMA} \
+    USE_CUDA_DOCKER=${USE_CUDA} \
+    USE_CUDA_DOCKER_VER=${USE_CUDA_VER} \
+    USE_EMBEDDING_MODEL_DOCKER=${USE_EMBEDDING_MODEL} \
+    USE_RERANKING_MODEL_DOCKER=${USE_RERANKING_MODEL}
+
+ENV OLLAMA_BASE_URL="/ollama" \
+    OPENAI_API_BASE_URL=""
+
+ENV OPENAI_API_KEY="" \
+    SCARF_NO_ANALYTICS=true \
+    DO_NOT_TRACK=true \
+    ANONYMIZED_TELEMETRY=false
+
+ENV WHISPER_MODEL="base" \
+    WHISPER_MODEL_DIR="/app/var/cache/whisper/models"
+
+ENV RAG_EMBEDDING_MODEL="$USE_EMBEDDING_MODEL_DOCKER" \
+    RAG_RERANKING_MODEL="$USE_RERANKING_MODEL_DOCKER" \
+    SENTENCE_TRANSFORMERS_HOME="/app/var/cache/embedding/models"
+
+ENV TIKTOKEN_ENCODING_NAME="cl100k_base" \
+    TIKTOKEN_CACHE_DIR="/app/var/cache/tiktoken"
+
+ENV HF_HOME="/app/var/cache/embedding/models"
+
+WORKDIR /app
+ENV HOME=/root
+
+RUN if [ $UID -ne 0 ]; then \
+        if [ $GID -ne 0 ]; then addgroup --gid $GID app; fi; \
+        adduser --uid $UID --gid $GID --home $HOME --disabled-password --no-create-home app; \
+    fi
+
+RUN mkdir -p $HOME/.cache/chroma && \
+    echo -n 00000000-0000-0000-0000-000000000000 > $HOME/.cache/chroma/telemetry_user_id
+
+RUN chown -R $UID:$GID /app $HOME
+
+RUN if [ "$USE_OLLAMA" = "true" ]; then \
+        apt-get update && \
+        apt-get install -y --no-install-recommends git build-essential pandoc netcat-openbsd curl jq && \
+        apt-get install -y --no-install-recommends gcc python3-dev && \
+        apt-get install -y --no-install-recommends ffmpeg libsm6 libxext6 && \
+        curl -fsSL https://ollama.com/install.sh | sh && \
+        rm -rf /var/lib/apt/lists/*; \
+    else \
+        apt-get update && \
+        apt-get install -y --no-install-recommends git build-essential pandoc gcc netcat-openbsd curl jq && \
+        apt-get install -y --no-install-recommends gcc python3-dev && \
+        apt-get install -y --no-install-recommends ffmpeg libsm6 libxext6 && \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
+# Install Python dependencies
+COPY --chown=$UID:$GID ./requirements.txt ./requirements.txt
+
+RUN pip3 install uv && \
+    if [ "$USE_CUDA" = "true" ]; then \
+        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/$USE_CUDA_DOCKER_VER --no-cache-dir && \
+        uv pip install --system -r requirements.txt --no-cache-dir; \
+    else \
+        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --no-cache-dir && \
+        uv pip install --system -r requirements.txt --no-cache-dir; \
+    fi && \
+    mkdir -p /app/var/cache && chown -R $UID:$GID /app/var/
+
+# Copy backend source
+COPY --chown=$UID:$GID . .
+
+# Copy built frontend from stage 1
+COPY --from=frontend-builder --chown=$UID:$GID /app/ui/build ./ui/build
+
+EXPOSE 8080
+
+HEALTHCHECK CMD curl --silent --fail http://localhost:${PORT:-8080}/health | jq -ne 'input.status == "healthy"' || exit 1
+
+USER $UID:$GID
+
+ARG BUILD_HASH
+ENV TUTORAI_BUILD_HASH=${BUILD_HASH}
+ENV DOCKER=true
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

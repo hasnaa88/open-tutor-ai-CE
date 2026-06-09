@@ -1,0 +1,27 @@
+# Minimal dependencies for CI (format check + pytest).
+# Does NOT include heavy optional deps (chromadb, playwright, transformers, etc.)
+# The full stack is in requirements.txt for production installs.
+
+fastapi==0.115.7
+uvicorn[standard]==0.30.6
+pydantic[email]==2.10.6
+python-multipart==0.0.18
+python-dotenv>=1.0,<2
+
+python-socketio==5.11.3
+python-jose==3.4.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.0
+PyJWT[crypto]==2.10.1
+
+httpx>=0.27,<1
+anyio[trio]
+
+sqlalchemy==2.0.32
+aiofiles
+
+pytest~=8.3.2
+pytest-anyio
+anyio
+
+black==24.8.0
