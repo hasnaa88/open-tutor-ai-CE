@@ -13,6 +13,10 @@
 	export let username: string = '';
 	export let toggleSidebar: () => void;
 	export let isDarkMode: boolean = false;
+	export let subtitle: string | null = null;
+
+	$: settingsHref = `/${$user?.role ?? 'student'}/settings`;
+	$: showDemoToggle = ($user?.role ?? 'student') === 'student';
 
 	// State
 	let searchQuery: string = '';
@@ -80,7 +84,7 @@
 			demoData.set(mockData);
 			isDemo.set(true);
 			localStorage.setItem('demoMode', 'true');
-			toast.success($i18n.t('Demo mode activated. You\'re now exploring with sample data.'));
+			toast.success($i18n.t("Demo mode activated. You're now exploring with sample data."));
 		}
 		showUserDropdown = false;
 	}
@@ -144,11 +148,11 @@
 				class={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-800'} flex items-center gap-2`}
 			>
 				<span class="hidden sm:inline">
-					{username ? $i18n.t('Hello') + ' ' + username + ' 👋': $i18n.t('Hello')}
+					{username ? $i18n.t('Hello') + ' ' + username + ' 👋' : $i18n.t('Hello')}
 				</span>
 			</h1>
 			<p class={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block`}>
-				{$i18n.t("Let's learn something new today!")}
+				{$i18n.t(subtitle ?? "Let's learn something new today!")}
 			</p>
 		</div>
 	</div>
@@ -359,7 +363,12 @@
 				aria-expanded={showUserDropdown}
 				on:click={toggleUserDropdown}
 			>
-				<img src={profileImageUrl} alt="User" crossorigin="anonymous" class="h-full w-full object-cover" />
+				<img
+					src={profileImageUrl}
+					alt="User"
+					crossorigin="anonymous"
+					class="h-full w-full object-cover"
+				/>
 			</button>
 			{#if showUserDropdown}
 				<div
@@ -375,7 +384,7 @@
 					</div>
 					<div class="py-1">
 						<a
-							href="/student/settings"
+							href={settingsHref}
 							class={`flex items-center px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
 						>
 							<svg
@@ -395,7 +404,7 @@
 							{$i18n.t('My Profile')}
 						</a>
 						<a
-							href="/student/settings"
+							href={settingsHref}
 							class={`flex items-center px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
 						>
 							<svg
@@ -441,33 +450,39 @@
 							{$i18n.t('Learning Progress')}
 						</a>
 					</div>
-					<div class={`py-1 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-						<button
-							on:click={toggleDemoMode}
-							class={`flex w-full items-center justify-between px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
-						>
-							<div class="flex items-center">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-4 w-4 mr-2"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
+					{#if showDemoToggle}
+						<div class={`py-1 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+							<button
+								on:click={toggleDemoMode}
+								class={`flex w-full items-center justify-between px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
+							>
+								<div class="flex items-center">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-4 w-4 mr-2"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+										/>
+									</svg>
+									<span>{$i18n.t('Demo Mode')}</span>
+								</div>
+								<div
+									class={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${$isDemo ? 'bg-blue-600' : isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}
 								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-									/>
-								</svg>
-								<span>{$i18n.t('Demo Mode')}</span>
-							</div>
-							<div class={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${$isDemo ? 'bg-blue-600' : isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}>
-								<span class={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${$isDemo ? 'translate-x-5' : 'translate-x-1'}`}></span>
-							</div>
-						</button>
-					</div>
+									<span
+										class={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${$isDemo ? 'translate-x-5' : 'translate-x-1'}`}
+									></span>
+								</div>
+							</button>
+						</div>
+					{/if}
 					<div class={`py-1 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
 						<button
 							on:click={() => {
@@ -576,7 +591,12 @@
 				on:click={toggleMobileMenu}
 				aria-label="User menu"
 			>
-				<img src={profileImageUrl} alt="User" crossorigin="anonymous" class="h-full w-full object-cover" />
+				<img
+					src={profileImageUrl}
+					alt="User"
+					crossorigin="anonymous"
+					class="h-full w-full object-cover"
+				/>
 			</button>
 
 			<!-- Mobile menu (dropdown style instead of slide-in) -->
@@ -594,7 +614,7 @@
 					</div>
 					<div class="py-1">
 						<a
-							href="/student/settings"
+							href={settingsHref}
 							class={`flex items-center px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
 						>
 							<svg
@@ -614,7 +634,7 @@
 							{$i18n.t('My Profile')}
 						</a>
 						<a
-							href="/student/settings"
+							href={settingsHref}
 							class={`flex items-center px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
 						>
 							<svg
@@ -660,33 +680,39 @@
 							{$i18n.t('Help Center')}
 						</a>
 					</div>
-					<div class={`py-1 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-						<button
-							on:click={toggleDemoMode}
-							class={`flex w-full items-center justify-between px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
-						>
-							<div class="flex items-center">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-4 w-4 mr-2"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
+					{#if showDemoToggle}
+						<div class={`py-1 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+							<button
+								on:click={toggleDemoMode}
+								class={`flex w-full items-center justify-between px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'}`}
+							>
+								<div class="flex items-center">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-4 w-4 mr-2"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+										/>
+									</svg>
+									<span>{$i18n.t('Demo Mode')}</span>
+								</div>
+								<div
+									class={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${$isDemo ? 'bg-blue-600' : isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}
 								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-									/>
-								</svg>
-								<span>{$i18n.t('Demo Mode')}</span>
-							</div>
-							<div class={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${$isDemo ? 'bg-blue-600' : isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}>
-								<span class={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${$isDemo ? 'translate-x-5' : 'translate-x-1'}`}></span>
-							</div>
-						</button>
-					</div>
+									<span
+										class={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${$isDemo ? 'translate-x-5' : 'translate-x-1'}`}
+									></span>
+								</div>
+							</button>
+						</div>
+					{/if}
 					<div class={`py-1 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
 						<button
 							on:click={() => {

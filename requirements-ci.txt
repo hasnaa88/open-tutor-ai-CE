@@ -22,6 +22,7 @@ aiofiles
 
 pytest~=8.3.2
 pytest-anyio
+pytest-mock
 anyio
 
 black==24.8.0
