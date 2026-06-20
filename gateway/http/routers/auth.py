@@ -62,7 +62,7 @@ def _user_payload(token: str, user: User) -> dict:
         "id": user.id,
         "email": user.email,
         "name": user.name,
-        "role": "admin" if user.is_admin else "user",
+        "role": "admin" if user.is_admin else (user.role or "user"),
         "profile_image_url": user.profile_image_url,
     }
 
@@ -74,7 +74,7 @@ async def get_session_user(current_user: User = Depends(get_current_user)):
         "id": current_user.id,
         "email": current_user.email,
         "name": current_user.name,
-        "role": "admin" if current_user.is_admin else "user",
+        "role": "admin" if current_user.is_admin else (current_user.role or "user"),
         "profile_image_url": current_user.profile_image_url,
     }
 
@@ -111,8 +111,15 @@ async def signup(
     request: SignUpRequest,
     svc: AccountService = Depends(get_account_service),
 ):
-    """Sign up — first user becomes admin."""
+    """Sign up — first user becomes admin; role otherwise self-selected from an allowlist."""
     is_admin = svc.count_users() == 0
+    allowed_self_roles = {"user", "teacher", "parent"}
+    requested = request.role or "user"
+    role = (
+        "admin"
+        if is_admin
+        else (requested if requested in allowed_self_roles else "user")
+    )
     try:
         user = svc.create_user(
             email=request.email,
@@ -120,6 +127,7 @@ async def signup(
             password_plain=request.password,
             profile_image_url=request.profile_image_url,
             is_admin=is_admin,
+            role=role,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
@@ -154,6 +162,7 @@ async def add_user(
             password_plain=request.password,
             profile_image_url=request.profile_image_url,
             is_admin=(request.role == "admin"),
+            role=request.role,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
@@ -178,7 +187,7 @@ async def update_profile(
         "id": user.id,
         "email": user.email,
         "name": user.name,
-        "role": "admin" if user.is_admin else "user",
+        "role": "admin" if user.is_admin else (user.role or "user"),
         "profile_image_url": user.profile_image_url,
     }
 
