@@ -5,6 +5,7 @@
 	import type { StudentOut, StudentHistory } from '$lib/types/classroom';
 	import StudentAvatar from './StudentAvatar.svelte';
 	import StudentHistoryPanel from './attendance/StudentHistoryPanel.svelte';
+	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const i18n = getContext('i18n');
 	const token = () => localStorage.getItem('token') ?? '';
@@ -57,7 +58,7 @@
 		>
 			<div class="flex items-start justify-between mb-1">
 				<div class="flex items-center gap-3">
-					<StudentAvatar name={student.name} size="lg" />
+					<StudentAvatar name={student.name} imageUrl={student.profile_image_url} size="lg" />
 					<div>
 						<h2 class="text-lg font-semibold text-gray-900 dark:text-white">{student.name}</h2>
 						<p class="text-sm text-gray-500 dark:text-gray-400">{student.email}</p>
@@ -67,9 +68,9 @@
 					type="button"
 					on:click={close}
 					aria-label={$i18n.t('Close')}
-					class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none"
+					class="p-1.5 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
 				>
-					&times;
+					<XMark className="w-4 h-4" />
 				</button>
 			</div>
 

@@ -10,6 +10,8 @@
 	import StudentAvatar from './StudentAvatar.svelte';
 	import ClassroomSeatingChart from './ClassroomSeatingChart.svelte';
 	import StudentInfoModal from './StudentInfoModal.svelte';
+	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
+	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
 
 	const i18n = getContext('i18n');
 	const token = () => localStorage.getItem('token') ?? '';
@@ -252,10 +254,13 @@
 					<span class="font-mono font-semibold text-gray-900 dark:text-white">{inviteCode}</span>
 					<button
 						type="button"
+						data-testid="copy-invite-code-button"
+						title={$i18n.t('Copy')}
+						aria-label={$i18n.t('Copy')}
 						on:click={() => inviteCode && navigator.clipboard?.writeText(inviteCode)}
-						class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+						class="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
 					>
-						{$i18n.t('Copy')}
+						<DocumentDuplicate className="w-4 h-4" />
 					</button>
 				</div>
 				<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -336,7 +341,11 @@
 											aria-label={$i18n.t('View student info')}
 											class="rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400"
 										>
-											<StudentAvatar name={student.name} size="sm" />
+											<StudentAvatar
+												name={student.name}
+												imageUrl={student.profile_image_url}
+												size="sm"
+											/>
 										</button>
 										{student.name}
 									</div>
@@ -348,10 +357,13 @@
 								<td class="py-2 text-right">
 									<button
 										type="button"
+										data-testid="remove-student-button"
+										title={$i18n.t('Remove')}
+										aria-label={$i18n.t('Remove student')}
 										on:click={() => removeStudent(student.id)}
-										class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
+										class="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
 									>
-										{$i18n.t('Remove')}
+										<GarbageBin className="w-4 h-4" />
 									</button>
 								</td>
 							</tr>

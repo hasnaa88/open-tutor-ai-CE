@@ -13,6 +13,17 @@ from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 from data.database import Base, get_db
 from gateway.http.app import create_app
+from gateway.http.rate_limit import limiter
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limiter():
+    """The rate limiter's in-memory storage is a process-wide singleton, so
+    without resetting it between tests, signup/signin-heavy test files would
+    trip real rate limits and fail for reasons unrelated to what they test.
+    """
+    limiter.reset()
+    yield
 
 
 @pytest.fixture

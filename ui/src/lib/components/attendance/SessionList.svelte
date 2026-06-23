@@ -2,12 +2,21 @@
 	import { createEventDispatcher, getContext } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import type { SessionSummary } from '$lib/types/classroom';
+	import StopCircle from '$lib/components/icons/StopCircle.svelte';
+	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
 	export let sessions: SessionSummary[] = [];
 	export let selectedId: string | null = null;
+
+	const confirmDelete = (event: MouseEvent, sessionId: string) => {
+		event.stopPropagation();
+		if (confirm($i18n.t('Delete this session and all its attendance records?'))) {
+			dispatch('delete', sessionId);
+		}
+	};
 
 	const formatDate = (iso: string) =>
 		new Intl.DateTimeFormat(navigator.language || 'en-US', {
@@ -37,10 +46,17 @@
 			on:click={() => dispatch('select', session.id)}
 		>
 			<div class="flex items-center justify-between text-sm">
-				<span class="font-medium text-gray-900 dark:text-white">
-					{formatDate(session.scheduled_at)}
-				</span>
-				<div class="flex items-center gap-2">
+				<div class="min-w-0">
+					<span class="font-medium text-gray-900 dark:text-white">
+						{session.subject || formatDate(session.scheduled_at)}
+					</span>
+					{#if session.subject}
+						<span class="text-gray-400 dark:text-gray-500"
+							>· {formatDate(session.scheduled_at)}</span
+						>
+					{/if}
+				</div>
+				<div class="flex items-center gap-2 flex-shrink-0">
 					<span class="text-gray-500 dark:text-gray-400">{formatTime(session.scheduled_at)}</span>
 					{#if session.ended_at}
 						<span
@@ -63,6 +79,14 @@
 					{/if}
 				</div>
 			</div>
+			{#if session.objectives}
+				<p
+					class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1"
+					title={session.objectives}
+				>
+					{$i18n.t('Objectives')}: {session.objectives}
+				</p>
+			{/if}
 			<div class="flex items-center justify-between mt-1">
 				<div class="text-xs text-gray-500 dark:text-gray-400">
 					{session.present_count}
@@ -74,13 +98,26 @@
 					<button
 						type="button"
 						data-testid="end-session-button"
+						title={$i18n.t('Terminer la séance')}
+						aria-label={$i18n.t('Terminer la séance')}
 						on:click={(e) => {
 							e.stopPropagation();
 							dispatch('end', session.id);
 						}}
-						class="text-xs font-medium text-red-600 dark:text-red-400 hover:underline whitespace-nowrap"
+						class="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
 					>
-						{$i18n.t('Terminer')}
+						<StopCircle className="w-4 h-4" />
+					</button>
+				{:else}
+					<button
+						type="button"
+						data-testid="delete-session-button"
+						title={$i18n.t('Supprimer la séance')}
+						aria-label={$i18n.t('Supprimer la séance')}
+						on:click={(e) => confirmDelete(e, session.id)}
+						class="p-1.5 rounded-full text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+					>
+						<GarbageBin className="w-4 h-4" />
 					</button>
 				{/if}
 			</div>

@@ -169,6 +169,35 @@ def test_scenario_e_session_lifecycle_updates_stats_and_history(client, db):
     assert sessions[0]["absent_count"] == 1
 
 
+@pytest.mark.integration
+def test_start_session_endpoint_accepts_and_returns_objectives(client):
+    owner_token = _signup(
+        client, "teacher-objectives@t.com", "Teacher Obj", role="teacher"
+    )
+    created = client.post(
+        "/api/classrooms", json={"name": "Chemistry"}, headers=_auth(owner_token)
+    ).json()
+
+    started = client.post(
+        f"/api/classrooms/{created['id']}/sessions",
+        json={
+            "scheduled_at": datetime.utcnow().isoformat(),
+            "subject": "Chemistry",
+            "objectives": "Balance chemical equations",
+        },
+        headers=_auth(owner_token),
+    )
+    assert started.status_code == 201
+    session = started.json()
+    assert session["subject"] == "Chemistry"
+    assert session["objectives"] == "Balance chemical equations"
+
+    sessions = client.get(
+        f"/api/classrooms/{created['id']}/sessions", headers=_auth(owner_token)
+    ).json()
+    assert sessions[0]["objectives"] == "Balance chemical equations"
+
+
 # --- Regression: writes must survive the request session closing -------
 #
 # get_db() only closes the session (gateway/.../database.py), it never

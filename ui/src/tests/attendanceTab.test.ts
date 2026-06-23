@@ -29,6 +29,7 @@ vi.mock('$lib/apis/sessions', () => ({
 	SessionsAPI: {
 		startSession: vi.fn(),
 		endSession: vi.fn(),
+		deleteSession: vi.fn(),
 		getPresences: vi.fn(),
 		updatePresence: vi.fn(),
 		getStats: vi.fn(),
@@ -171,8 +172,30 @@ describe('Classroom Detail page', () => {
 		await waitFor(() => expect(screen.getByTestId('join-code-banner')).toBeTruthy());
 		expect(screen.getByText('ABC12345')).toBeTruthy();
 
-		await fireEvent.click(screen.getByText('Copy'));
+		await fireEvent.click(screen.getByTestId('copy-join-code-button'));
 		expect(writeText).toHaveBeenCalledWith('ABC12345');
+	});
+
+	it('shows the session subject and objectives in the session list', async () => {
+		setupHappyPath();
+		vi.mocked(SessionsAPI.getSessions).mockResolvedValue([
+			{
+				id: 's1',
+				classroom_id: 'c1',
+				scheduled_at: '2026-01-10T09:00:00',
+				subject: 'Algebra',
+				objectives: 'Solve quadratic equations',
+				auto_recorded: true,
+				present_count: 8,
+				absent_count: 1,
+				late_count: 1
+			}
+		]);
+		renderPage();
+
+		await waitFor(() => expect(screen.getAllByTestId('session-item').length).toBe(1));
+		expect(screen.getByText('Algebra')).toBeTruthy();
+		expect(screen.getByText(/Solve quadratic equations/)).toBeTruthy();
 	});
 
 	it('renders all 7 tabs', async () => {
@@ -255,23 +278,40 @@ describe('Classroom Detail page', () => {
 		expect(screen.getAllByTestId('presence-status-badge').length).toBe(2);
 	});
 
-	it('"Démarrer une séance" calls SessionsAPI.startSession()', async () => {
+	it('"Démarrer une séance" opens a form, then calls SessionsAPI.startSession() with course and objectives', async () => {
 		setupHappyPath();
 		vi.mocked(SessionsAPI.startSession).mockResolvedValue({
 			id: 's3',
 			classroom_id: 'c1',
 			scheduled_at: '2026-02-01T09:00:00',
-			subject: 'Algebra',
+			subject: 'Algebra II',
+			objectives: 'Review chapter 3',
 			auto_recorded: true
 		});
+		vi.mocked(SessionsAPI.getPresences).mockResolvedValue([]);
 		renderPage();
 		await waitFor(() => expect(screen.getAllByTestId('session-item').length).toBe(2));
 
 		await fireEvent.click(screen.getByRole('button', { name: /Démarrer une séance/i }));
+		await waitFor(() => expect(screen.getByTestId('start-session-modal')).toBeTruthy());
+
+		const subjectInput = screen.getByLabelText('Course');
+		await fireEvent.input(subjectInput, { target: { value: 'Algebra II' } });
+		const objectivesInput = screen.getByLabelText('Objectives');
+		await fireEvent.input(objectivesInput, { target: { value: 'Review chapter 3' } });
+
+		await fireEvent.click(screen.getByTestId('confirm-start-session'));
 
 		await waitFor(() =>
-			expect(SessionsAPI.startSession).toHaveBeenCalledWith('test-token', 'c1', expect.anything())
+			expect(SessionsAPI.startSession).toHaveBeenCalledWith(
+				'test-token',
+				'c1',
+				'Algebra II',
+				'Review chapter 3'
+			)
 		);
+		await waitFor(() => expect(screen.getByTestId('session-started-summary')).toBeTruthy());
+		expect(screen.getByText('Review chapter 3')).toBeTruthy();
 	});
 
 	it('"Terminer" on an open session calls SessionsAPI.endSession() and refreshes the list', async () => {
@@ -292,6 +332,47 @@ describe('Classroom Detail page', () => {
 
 		await waitFor(() => expect(SessionsAPI.endSession).toHaveBeenCalledWith('test-token', 's1'));
 		await waitFor(() => expect(SessionsAPI.getSessions).toHaveBeenCalledTimes(2));
+	});
+
+	it('shows "Supprimer" only on ended sessions and deletes after confirmation', async () => {
+		setupHappyPath();
+		vi.mocked(SessionsAPI.getSessions).mockResolvedValue([
+			{ ...sessionsFixture[0], ended_at: '2026-01-10T10:00:00' },
+			sessionsFixture[1]
+		]);
+		vi.mocked(SessionsAPI.deleteSession).mockResolvedValue({ status: 'deleted' });
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+		renderPage();
+
+		await waitFor(() => expect(screen.getAllByTestId('session-item').length).toBe(2));
+		expect(screen.getAllByTestId('delete-session-button').length).toBe(1);
+		expect(screen.getAllByTestId('end-session-button').length).toBe(1);
+
+		await fireEvent.click(screen.getByTestId('delete-session-button'));
+
+		expect(confirmSpy).toHaveBeenCalled();
+		await waitFor(() => expect(SessionsAPI.deleteSession).toHaveBeenCalledWith('test-token', 's1'));
+		await waitFor(() => expect(SessionsAPI.getSessions).toHaveBeenCalledTimes(2));
+
+		confirmSpy.mockRestore();
+	});
+
+	it('does not delete a session if the confirmation is cancelled', async () => {
+		setupHappyPath();
+		vi.mocked(SessionsAPI.getSessions).mockResolvedValue([
+			{ ...sessionsFixture[0], ended_at: '2026-01-10T10:00:00' },
+			sessionsFixture[1]
+		]);
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+		renderPage();
+
+		await waitFor(() => expect(screen.getAllByTestId('delete-session-button').length).toBe(1));
+		await fireEvent.click(screen.getByTestId('delete-session-button'));
+
+		expect(confirmSpy).toHaveBeenCalled();
+		expect(SessionsAPI.deleteSession).not.toHaveBeenCalled();
+
+		confirmSpy.mockRestore();
 	});
 
 	it('shows the student history panel with rate, counts, and 10 session circles', async () => {

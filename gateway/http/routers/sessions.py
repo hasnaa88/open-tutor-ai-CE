@@ -8,14 +8,15 @@ out its full path.
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from common.exceptions import NotFoundError, ValidationError
 from data.database import get_db
 from data.models import PresenceStatus, User
 from gateway.http.dependencies import get_current_user
+from gateway.http.rate_limit import limiter
 from learning.attendance.service import AttendanceService
 from learning.sessions.schemas import (
     AttendanceStats,
@@ -34,7 +35,8 @@ def get_attendance_service(db: Session = Depends(get_db)) -> AttendanceService:
 
 class StartSessionRequest(BaseModel):
     scheduled_at: datetime
-    subject: Optional[str] = None
+    subject: Optional[str] = Field(default=None, max_length=200)
+    objectives: Optional[str] = Field(default=None, max_length=2000)
 
 
 class UpdatePresenceRequest(BaseModel):
@@ -54,7 +56,11 @@ async def start_session(
 ):
     try:
         return svc.start_session(
-            classroom_id, current_user.id, body.scheduled_at, body.subject
+            classroom_id,
+            current_user.id,
+            body.scheduled_at,
+            body.subject,
+            body.objectives,
         )
     except PermissionError:
         raise HTTPException(
@@ -98,8 +104,29 @@ async def end_session(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
 
 
+@router.delete("/api/sessions/{session_id}")
+async def delete_session(
+    session_id: str,
+    current_user: User = Depends(get_current_user),
+    svc: AttendanceService = Depends(get_attendance_service),
+):
+    try:
+        svc.delete_session(session_id, current_user.id)
+    except PermissionError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
+        )
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    except ValidationError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
+    return {"status": "deleted"}
+
+
 @router.post("/api/sessions/{session_id}/join", response_model=PresenceOut)
+@limiter.limit("20/minute")
 async def join_session(
+    request: Request,
     session_id: str,
     current_user: User = Depends(get_current_user),
     svc: AttendanceService = Depends(get_attendance_service),

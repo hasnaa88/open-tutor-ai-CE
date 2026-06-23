@@ -26,7 +26,9 @@ class ClassroomRepository(BaseRepository[Classroom]):
         self.session.commit()
         return classroom
 
-    def get_by_owner(self, owner_id: str) -> List[Classroom]:
+    def get_by_owner(
+        self, owner_id: str, limit: int = 100, offset: int = 0
+    ) -> List[Classroom]:
         """Return owner's classrooms with student_count joined from enrollments."""
         rows = (
             self.session.query(
@@ -36,6 +38,8 @@ class ClassroomRepository(BaseRepository[Classroom]):
             .filter(Classroom.owner_id == owner_id)
             .group_by(Classroom.id)
             .order_by(Classroom.created_at.desc())
+            .limit(limit)
+            .offset(offset)
             .all()
         )
         classrooms = []
@@ -72,15 +76,21 @@ class ClassroomRepository(BaseRepository[Classroom]):
         ).delete(synchronize_session=False)
         self.session.commit()
 
-    def get_enrollments(self, classroom_id: str) -> List[Enrollment]:
+    def get_enrollments(
+        self, classroom_id: str, limit: int = 100, offset: int = 0
+    ) -> List[Enrollment]:
         return (
             self.session.query(Enrollment)
             .filter(Enrollment.classroom_id == classroom_id)
             .order_by(Enrollment.enrolled_at.asc())
+            .limit(limit)
+            .offset(offset)
             .all()
         )
 
-    def get_enrolled_classrooms(self, student_id: str) -> List[Classroom]:
+    def get_enrolled_classrooms(
+        self, student_id: str, limit: int = 100, offset: int = 0
+    ) -> List[Classroom]:
         """Return classrooms the student is enrolled in, with student_count joined."""
         rows = (
             self.session.query(
@@ -96,6 +106,8 @@ class ClassroomRepository(BaseRepository[Classroom]):
             )
             .group_by(Classroom.id)
             .order_by(Classroom.created_at.desc())
+            .limit(limit)
+            .offset(offset)
             .all()
         )
         classrooms = []

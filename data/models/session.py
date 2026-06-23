@@ -1,7 +1,7 @@
 """Class session domain model."""
 
 import uuid
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 from data.database import Base
 
@@ -13,6 +13,7 @@ class ClassSession(Base):
     classroom_id = Column(String(36), ForeignKey("classrooms.id"), nullable=False)
     scheduled_at = Column(DateTime, nullable=False)
     subject = Column(String(255), nullable=True)
+    objectives = Column(Text, nullable=True)
     auto_recorded = Column(Boolean, default=False, nullable=False)
     ended_at = Column(DateTime, nullable=True)
 
@@ -29,6 +30,7 @@ class ClassSession(Base):
                 self.scheduled_at.isoformat() if self.scheduled_at else None
             ),
             "subject": self.subject,
+            "objectives": self.objectives,
             "auto_recorded": self.auto_recorded,
             "ended_at": self.ended_at.isoformat() if self.ended_at else None,
         }

@@ -69,12 +69,18 @@ class ClassroomsService:
         classroom = self.repo.create(owner_id, data)
         return _to_classroom_out(classroom, student_count=0)
 
-    def get_my_classrooms(self, owner_id: str) -> List[ClassroomOut]:
-        classrooms = self.repo.get_by_owner(owner_id)
+    def get_my_classrooms(
+        self, owner_id: str, limit: int = 100, offset: int = 0
+    ) -> List[ClassroomOut]:
+        classrooms = self.repo.get_by_owner(owner_id, limit=limit, offset=offset)
         return [_to_classroom_out(c, student_count=c.student_count) for c in classrooms]
 
-    def list_enrolled_classrooms(self, student_id: str) -> List[EnrolledClassroomOut]:
-        classrooms = self.repo.get_enrolled_classrooms(student_id)
+    def list_enrolled_classrooms(
+        self, student_id: str, limit: int = 100, offset: int = 0
+    ) -> List[EnrolledClassroomOut]:
+        classrooms = self.repo.get_enrolled_classrooms(
+            student_id, limit=limit, offset=offset
+        )
         result = []
         for classroom in classrooms:
             open_session = self.attendance_repo.get_open_session(classroom.id)
@@ -106,7 +112,7 @@ class ClassroomsService:
         if invite is None:
             invite = self.repo.create_invite(
                 classroom_id=classroom_id,
-                code=uuid.uuid4().hex[:12],
+                code=uuid.uuid4().hex[:16],
                 created_by=caller_id,
                 is_primary=True,
             )
@@ -125,18 +131,25 @@ class ClassroomsService:
         self._require_owned(classroom_id, caller_id)
         self.repo.delete(classroom_id)
 
-    def list_students(self, classroom_id: str, caller_id: str) -> List[StudentOut]:
+    def list_students(
+        self, classroom_id: str, caller_id: str, limit: int = 100, offset: int = 0
+    ) -> List[StudentOut]:
         self._require_owned(classroom_id, caller_id)
-        enrollments = self.repo.get_enrollments(classroom_id)
+        enrollments = self.repo.get_enrollments(
+            classroom_id, limit=limit, offset=offset
+        )
         return [
             StudentOut(
                 id=e.student.id,
                 name=e.student.name,
                 email=e.student.email,
                 enrolled_at=e.enrolled_at,
+                profile_image_url=e.student.profile_image_url,
             )
             for e in enrollments
         ]
+
+    _CSV_MAX_ROWS = 2_000
 
     def import_students_from_csv(
         self, classroom_id: str, caller_id: str, file: IO
@@ -150,6 +163,10 @@ class ClassroomsService:
         row_no = 0
         acct = AccountService(self.session)
         for row in reader:
+            if row_no >= self._CSV_MAX_ROWS:
+                raise ValidationError(
+                    f"CSV must not exceed {self._CSV_MAX_ROWS} data rows"
+                )
             row_no += 1
             email = (row.get("email") or "").strip()
             name = (row.get("name") or "").strip()
@@ -190,7 +207,7 @@ class ClassroomsService:
         self, classroom_id: str, caller_id: str, data: InviteCreate
     ) -> InviteOut:
         classroom = self._require_owned(classroom_id, caller_id)
-        code = uuid.uuid4().hex[:12]
+        code = uuid.uuid4().hex[:16]
         invite = self.repo.create_invite(
             classroom_id=classroom_id,
             code=code,

@@ -54,6 +54,7 @@ export interface SessionOut {
 	classroom_id: string;
 	scheduled_at: string;
 	subject?: string;
+	objectives?: string | null;
 	auto_recorded: boolean;
 	ended_at?: string | null;
 }
@@ -95,6 +96,7 @@ export interface StudentOut {
 	name: string;
 	email: string;
 	enrolled_at: string;
+	profile_image_url?: string | null;
 }
 
 export interface AddStudentRequest {

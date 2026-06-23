@@ -79,6 +79,26 @@ def test_start_session_creates_session_row(db):
 
 
 @pytest.mark.unit
+def test_start_session_stores_subject_and_objectives(db):
+    owner = _make_user(db, "owner1b@t.com", "Owner1b")
+    classroom = _make_classroom(db, owner.id)
+    service = AttendanceService(db)
+
+    result = service.start_session(
+        classroom.id,
+        owner.id,
+        scheduled_at=datetime.utcnow(),
+        subject="Algebra",
+        objectives="Solve quadratic equations\nReview homework",
+    )
+
+    assert result.subject == "Algebra"
+    assert result.objectives == "Solve quadratic equations\nReview homework"
+    session_row = db.query(ClassSession).filter(ClassSession.id == result.id).first()
+    assert session_row.objectives == "Solve quadratic equations\nReview homework"
+
+
+@pytest.mark.unit
 def test_start_session_generates_presence_rows(db):
     owner = _make_user(db, "owner2@t.com", "Owner2")
     classroom = _make_classroom(db, owner.id)
@@ -374,3 +394,45 @@ def test_end_session_sets_ended_at_and_requires_ownership(db):
 
     ended = service.end_session(session_out.id, owner.id)
     assert ended.ended_at is not None
+
+
+@pytest.mark.unit
+def test_delete_session_requires_owner_and_ended_session(db):
+    owner = _make_user(db, "owner17@t.com", "Owner17")
+    intruder = _make_user(db, "intruder17@t.com", "Intruder17")
+    classroom = _make_classroom(db, owner.id)
+    service = AttendanceService(db)
+    session_out = service.start_session(
+        classroom.id, owner.id, scheduled_at=datetime.utcnow()
+    )
+
+    with pytest.raises(PermissionError):
+        service.delete_session(session_out.id, intruder.id)
+
+    with pytest.raises(ValidationError):
+        service.delete_session(session_out.id, owner.id)
+
+    service.end_session(session_out.id, owner.id)
+    service.delete_session(session_out.id, owner.id)
+
+    assert (
+        db.query(ClassSession).filter(ClassSession.id == session_out.id).first() is None
+    )
+
+
+@pytest.mark.unit
+def test_delete_session_also_deletes_its_presences(db):
+    owner = _make_user(db, "owner18@t.com", "Owner18")
+    student = _make_user(db, "student18@t.com", "Student18")
+    classroom = _make_classroom(db, owner.id)
+    _enroll(db, classroom.id, student.id)
+    service = AttendanceService(db)
+    session_out = service.start_session(
+        classroom.id, owner.id, scheduled_at=datetime.utcnow()
+    )
+    service.end_session(session_out.id, owner.id)
+
+    service.delete_session(session_out.id, owner.id)
+
+    remaining = db.query(Presence).filter(Presence.session_id == session_out.id).all()
+    assert remaining == []

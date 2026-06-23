@@ -131,3 +131,18 @@ def test_classroom_detail_exposes_a_persistent_join_code(client, db):
     )
     assert redeemed.status_code == 200
     assert redeemed.json()["enrolled"] is True
+
+
+@pytest.mark.integration
+def test_redeem_invite_is_rate_limited_against_code_guessing(client):
+    student_token = _signup(client, "guesser@t.com", "Guesser")
+    statuses = [
+        client.post(
+            "/api/classrooms/invites/not-a-real-code/redeem",
+            headers=_auth(student_token),
+        ).status_code
+        for _ in range(11)
+    ]
+
+    assert statuses[:10] == [404] * 10
+    assert statuses[10] == 429

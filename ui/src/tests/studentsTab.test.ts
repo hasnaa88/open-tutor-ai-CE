@@ -160,7 +160,7 @@ describe('StudentsTab', () => {
 
 		await waitFor(() => expect(screen.getAllByTestId('student-row').length).toBe(2));
 
-		const removeButtons = screen.getAllByText('Remove');
+		const removeButtons = screen.getAllByTestId('remove-student-button');
 		await fireEvent.click(removeButtons[0]);
 
 		await waitFor(() => expect(ClassroomsAPI.removeStudent).toHaveBeenCalled());
@@ -184,7 +184,7 @@ describe('StudentsTab', () => {
 
 		await waitFor(() => expect(screen.getAllByTestId('student-row').length).toBe(2));
 
-		const removeButtons = screen.getAllByText('Remove');
+		const removeButtons = screen.getAllByTestId('remove-student-button');
 		await fireEvent.click(removeButtons[0]);
 
 		// Vérifier que removeStudent n'a pas été appelé

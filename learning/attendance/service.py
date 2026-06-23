@@ -57,10 +57,15 @@ class AttendanceService:
         caller_id: str,
         scheduled_at: datetime,
         subject: Optional[str] = None,
+        objectives: Optional[str] = None,
     ) -> SessionOut:
         classroom = self._require_classroom_owner(classroom_id, caller_id)
         session_row = self.repo.create_session(
-            classroom_id, scheduled_at, subject=subject, auto_recorded=True
+            classroom_id,
+            scheduled_at,
+            subject=subject,
+            objectives=objectives,
+            auto_recorded=True,
         )
         for enrollment in classroom.enrollments:
             self.repo.create_presence(
@@ -71,6 +76,7 @@ class AttendanceService:
             classroom_id=session_row.classroom_id,
             scheduled_at=session_row.scheduled_at,
             subject=session_row.subject,
+            objectives=session_row.objectives,
             auto_recorded=session_row.auto_recorded,
             ended_at=session_row.ended_at,
         )
@@ -83,9 +89,16 @@ class AttendanceService:
             classroom_id=session_row.classroom_id,
             scheduled_at=session_row.scheduled_at,
             subject=session_row.subject,
+            objectives=session_row.objectives,
             auto_recorded=session_row.auto_recorded,
             ended_at=session_row.ended_at,
         )
+
+    def delete_session(self, session_id: str, caller_id: str) -> None:
+        session_row = self._require_session_classroom_owner(session_id, caller_id)
+        if session_row.ended_at is None:
+            raise ValidationError("End the session before deleting it")
+        self.repo.delete_session(session_row.id)
 
     def join_session(self, session_id: str, student_id: str) -> PresenceOut:
         session_row = self.repo.get_session_by_id(session_id)
@@ -160,6 +173,7 @@ class AttendanceService:
                     classroom_id=session_row.classroom_id,
                     scheduled_at=session_row.scheduled_at,
                     subject=session_row.subject,
+                    objectives=session_row.objectives,
                     auto_recorded=session_row.auto_recorded,
                     ended_at=session_row.ended_at,
                     present_count=sum(

@@ -12,6 +12,7 @@
 		ClassroomDetail,
 		AttendanceStats,
 		SessionSummary,
+		SessionOut,
 		PresenceOut,
 		StudentHistory
 	} from '$lib/types/classroom';
@@ -22,6 +23,10 @@
 	import StudentsTab from '$lib/components/StudentsTab.svelte';
 	import DeleteClassroomModal from '$lib/components/DeleteClassroomModal.svelte';
 	import AnnouncementsFeed from '$lib/components/AnnouncementsFeed.svelte';
+	import StartSessionModal from '$lib/components/StartSessionModal.svelte';
+	import Pencil from '$lib/components/icons/Pencil.svelte';
+	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
+	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -56,6 +61,7 @@
 		sessionPresences.find((p) => p.student_id === selectedStudentId)?.student_name ?? '';
 
 	let showDeleteModal = false;
+	let showStartSessionModal = false;
 
 	const token = () => localStorage.getItem('token') ?? '';
 
@@ -100,9 +106,12 @@
 		studentHistory = await SessionsAPI.getStudentHistory(token(), classroomId, selectedStudentId);
 	};
 
-	const startSession = async () => {
-		await SessionsAPI.startSession(token(), classroomId, classroom?.subject ?? '');
+	const onSessionStarted = async (event: CustomEvent<SessionOut>) => {
 		sessions = await SessionsAPI.getSessions(token(), classroomId);
+		selectedSessionId = event.detail.id;
+		selectedStudentId = null;
+		studentHistory = null;
+		sessionPresences = await SessionsAPI.getPresences(token(), selectedSessionId);
 	};
 
 	const endSession = async (event: CustomEvent<string>) => {
@@ -110,6 +119,22 @@
 		sessions = await SessionsAPI.getSessions(token(), classroomId);
 		if (selectedSessionId === event.detail) {
 			sessionPresences = await SessionsAPI.getPresences(token(), selectedSessionId);
+		}
+	};
+
+	const deleteSession = async (event: CustomEvent<string>) => {
+		try {
+			await SessionsAPI.deleteSession(token(), event.detail);
+			sessions = await SessionsAPI.getSessions(token(), classroomId);
+			if (selectedSessionId === event.detail) {
+				selectedSessionId = null;
+				sessionPresences = [];
+				selectedStudentId = null;
+				studentHistory = null;
+			}
+			toast.success($i18n.t('Session deleted'));
+		} catch (err: any) {
+			toast.error(err?.detail || $i18n.t('Failed to delete session'));
 		}
 	};
 
@@ -157,15 +182,17 @@
 				<button
 					type="button"
 					on:click={() => goto(`/classrooms/${classroomId}/edit`)}
-					class="px-4 py-2 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+					class="inline-flex items-center gap-1.5 px-4 py-2 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 				>
+					<Pencil className="w-4 h-4" />
 					{$i18n.t('Edit')}
 				</button>
 				<button
 					type="button"
 					on:click={() => (showDeleteModal = true)}
-					class="px-4 py-2 text-red-600 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+					class="inline-flex items-center gap-1.5 px-4 py-2 text-red-600 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
 				>
+					<GarbageBin className="w-4 h-4" />
 					{$i18n.t('Delete')}
 				</button>
 			</div>
@@ -184,15 +211,18 @@
 				</div>
 				<button
 					type="button"
+					data-testid="copy-join-code-button"
+					title={$i18n.t('Copy')}
+					aria-label={$i18n.t('Copy')}
 					on:click={() => {
 						if (classroom?.join_code) {
 							navigator.clipboard?.writeText(classroom.join_code);
 							toast.success($i18n.t('Code copied!'));
 						}
 					}}
-					class="text-xs font-medium text-blue-700 dark:text-blue-300 hover:underline whitespace-nowrap"
+					class="p-1.5 rounded-full text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
 				>
-					{$i18n.t('Copy')}
+					<DocumentDuplicate className="w-4 h-4" />
 				</button>
 			</div>
 		{/if}
@@ -302,7 +332,7 @@
 				<div class="flex justify-end">
 					<button
 						type="button"
-						on:click={startSession}
+						on:click={() => (showStartSessionModal = true)}
 						class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
 					>
 						{$i18n.t('Démarrer une séance')}
@@ -319,6 +349,7 @@
 							selectedId={selectedSessionId}
 							on:select={selectSession}
 							on:end={endSession}
+							on:delete={deleteSession}
 						/>
 					</div>
 
@@ -361,5 +392,12 @@
 		classroomId={classroom.id}
 		classroomName={classroom.name}
 		on:deleted={handleDeleted}
+	/>
+
+	<StartSessionModal
+		bind:show={showStartSessionModal}
+		{classroomId}
+		defaultSubject={classroom.subject ?? ''}
+		on:started={onSessionStarted}
 	/>
 {/if}

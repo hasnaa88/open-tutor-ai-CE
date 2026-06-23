@@ -13,6 +13,7 @@ class SessionOut(BaseModel):
     classroom_id: str
     scheduled_at: datetime
     subject: Optional[str] = None
+    objectives: Optional[str] = None
     auto_recorded: bool
     ended_at: Optional[datetime] = None
 

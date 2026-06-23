@@ -3,25 +3,25 @@
 from datetime import date, datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class ClassroomCreate(BaseModel):
-    name: str
-    subject: Optional[str] = None
-    course: Optional[str] = None
-    objectives: Optional[str] = None
-    level: Optional[str] = None
-    description: Optional[str] = None
+    name: str = Field(min_length=1, max_length=200)
+    subject: Optional[str] = Field(default=None, max_length=200)
+    course: Optional[str] = Field(default=None, max_length=200)
+    objectives: Optional[str] = Field(default=None, max_length=2000)
+    level: Optional[str] = Field(default=None, max_length=100)
+    description: Optional[str] = Field(default=None, max_length=2000)
 
 
 class ClassroomUpdate(BaseModel):
-    name: Optional[str] = None
-    subject: Optional[str] = None
-    course: Optional[str] = None
-    objectives: Optional[str] = None
-    level: Optional[str] = None
-    description: Optional[str] = None
+    name: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    subject: Optional[str] = Field(default=None, max_length=200)
+    course: Optional[str] = Field(default=None, max_length=200)
+    objectives: Optional[str] = Field(default=None, max_length=2000)
+    level: Optional[str] = Field(default=None, max_length=100)
+    description: Optional[str] = Field(default=None, max_length=2000)
 
 
 class ClassroomOut(BaseModel):
@@ -66,6 +66,7 @@ class StudentOut(BaseModel):
     name: str
     email: str
     enrolled_at: date
+    profile_image_url: Optional[str] = None
 
 
 class AddStudentRequest(BaseModel):
@@ -96,7 +97,7 @@ class ImportResult(BaseModel):
 
 class InviteCreate(BaseModel):
     expires_at: Optional[datetime] = None
-    max_uses: Optional[int] = None
+    max_uses: Optional[int] = Field(default=None, ge=1)
 
 
 class InviteOut(BaseModel):

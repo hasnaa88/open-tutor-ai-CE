@@ -1,6 +1,10 @@
 <script lang="ts">
 	export let name: string;
 	export let size: 'sm' | 'md' | 'lg' = 'md';
+	export let imageUrl: string | null | undefined = null;
+
+	$: hasPhoto = !!imageUrl && imageUrl !== '/user.png';
+	let photoFailed = false;
 
 	const COLORS = [
 		'bg-blue-500',
@@ -37,11 +41,21 @@
 	$: initials = initialsOf(name || '?');
 </script>
 
-<div
-	data-testid="student-avatar"
-	class="rounded-full flex items-center justify-center font-semibold text-white flex-shrink-0 select-none {bgColor} {SIZES[
-		size
-	]}"
->
-	{initials}
-</div>
+{#if hasPhoto && !photoFailed}
+	<img
+		src={imageUrl}
+		alt={name}
+		data-testid="student-avatar"
+		on:error={() => (photoFailed = true)}
+		class="rounded-full object-cover flex-shrink-0 select-none {SIZES[size]}"
+	/>
+{:else}
+	<div
+		data-testid="student-avatar"
+		class="rounded-full flex items-center justify-center font-semibold text-white flex-shrink-0 select-none {bgColor} {SIZES[
+			size
+		]}"
+	>
+		{initials}
+	</div>
+{/if}

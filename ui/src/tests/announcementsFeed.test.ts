@@ -61,7 +61,7 @@ describe('AnnouncementsFeed', () => {
 
 		await waitFor(() => expect(screen.getAllByTestId('announcement-item').length).toBe(1));
 		expect(screen.queryByTestId('post-announcement-button')).toBeNull();
-		expect(screen.queryByText('Delete')).toBeNull();
+		expect(screen.queryByTestId('delete-announcement-button')).toBeNull();
 	});
 
 	it('posts a new announcement and prepends it to the list when canPost is true', async () => {
@@ -93,7 +93,7 @@ describe('AnnouncementsFeed', () => {
 		renderFeed({ classroomId: 'c1', canPost: true });
 
 		await waitFor(() => expect(screen.getAllByTestId('announcement-item').length).toBe(1));
-		await fireEvent.click(screen.getByText('Delete'));
+		await fireEvent.click(screen.getByTestId('delete-announcement-button'));
 
 		await waitFor(() => expect(AnnouncementsAPI.delete).toHaveBeenCalledWith('test-token', 'a1'));
 		await waitFor(() => expect(screen.queryByTestId('announcement-item')).toBeNull());

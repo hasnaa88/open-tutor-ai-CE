@@ -5,6 +5,8 @@
 	import type { ClassroomOut } from '$lib/types/classroom';
 	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
 	import UsersSolid from '$lib/components/icons/UsersSolid.svelte';
+	import Document from '$lib/components/icons/Document.svelte';
+	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
 	import DeleteClassroomModal from '$lib/components/DeleteClassroomModal.svelte';
 
 	const i18n = getContext('i18n');
@@ -84,24 +86,26 @@
 				>
 					<button
 						type="button"
-						class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+						class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
 						on:click={() => {
 							menuOpen = false;
 							goto(`/classrooms/${classroom.id}`);
 						}}
 					>
+						<Document className="w-4 h-4" />
 						{$i18n.t('View Details')}
 					</button>
 
 					{#if isOwner}
 						<button
 							type="button"
-							class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+							class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-700"
 							on:click={() => {
 								menuOpen = false;
 								showDeleteModal = true;
 							}}
 						>
+							<GarbageBin className="w-4 h-4" />
 							{$i18n.t('Delete')}
 						</button>
 					{/if}

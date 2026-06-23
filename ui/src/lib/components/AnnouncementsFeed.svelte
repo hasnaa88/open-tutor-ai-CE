@@ -6,6 +6,7 @@
 	import { AnnouncementsAPI } from '$lib/apis/announcements';
 	import type { AnnouncementOut } from '$lib/types/classroom';
 	import StudentAvatar from '$lib/components/StudentAvatar.svelte';
+	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
 
 	const i18n = getContext('i18n');
 	const token = () => localStorage.getItem('token') ?? '';
@@ -127,10 +128,13 @@
 					{#if canPost}
 						<button
 							type="button"
+							data-testid="delete-announcement-button"
+							title={$i18n.t('Delete')}
+							aria-label={$i18n.t('Delete announcement')}
 							on:click={() => remove(announcement.id)}
-							class="text-xs text-gray-400 hover:text-red-600 dark:hover:text-red-400 flex-shrink-0"
+							class="p-1.5 rounded-full text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 flex-shrink-0 transition-colors"
 						>
-							{$i18n.t('Delete')}
+							<GarbageBin className="w-4 h-4" />
 						</button>
 					{/if}
 				</div>

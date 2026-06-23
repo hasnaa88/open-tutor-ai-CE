@@ -16,12 +16,14 @@ class AttendanceRepository(BaseRepository[ClassSession]):
         classroom_id: str,
         scheduled_at: datetime,
         subject: Optional[str] = None,
+        objectives: Optional[str] = None,
         auto_recorded: bool = True,
     ) -> ClassSession:
         session_row = ClassSession(
             classroom_id=classroom_id,
             scheduled_at=scheduled_at,
             subject=subject,
+            objectives=objectives,
             auto_recorded=auto_recorded,
         )
         self.session.add(session_row)
@@ -61,6 +63,13 @@ class AttendanceRepository(BaseRepository[ClassSession]):
         session_row.ended_at = datetime.utcnow()
         self.session.commit()
         return session_row
+
+    def delete_session(self, session_id: str) -> None:
+        session_row = self.get_session_by_id(session_id)
+        if session_row is None:
+            return
+        self.session.delete(session_row)
+        self.session.commit()
 
     def create_presence(
         self,

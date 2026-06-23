@@ -28,10 +28,19 @@ const request = async <T>(token: string, url: string, options: RequestInit = {})
 };
 
 export const SessionsAPI = {
-	startSession: (token: string, classroomId: string, subject: string): Promise<SessionOut> =>
+	startSession: (
+		token: string,
+		classroomId: string,
+		subject: string,
+		objectives?: string
+	): Promise<SessionOut> =>
 		request(token, `${TUTOR_BASE_URL}/api/classrooms/${classroomId}/sessions`, {
 			method: 'POST',
-			body: JSON.stringify({ scheduled_at: new Date().toISOString(), subject })
+			body: JSON.stringify({
+				scheduled_at: new Date().toISOString(),
+				subject,
+				objectives: objectives || undefined
+			})
 		}),
 
 	getPresences: (token: string, sessionId: string): Promise<PresenceOut[]> =>
@@ -72,5 +81,12 @@ export const SessionsAPI = {
 	 * POST /api/sessions/{session_id}/join
 	 */
 	joinSession: (token: string, sessionId: string): Promise<PresenceOut> =>
-		request(token, `${TUTOR_BASE_URL}/api/sessions/${sessionId}/join`, { method: 'POST' })
+		request(token, `${TUTOR_BASE_URL}/api/sessions/${sessionId}/join`, { method: 'POST' }),
+
+	/**
+	 * Teacher-only: permanently delete an ended session and its presence records.
+	 * DELETE /api/sessions/{session_id}
+	 */
+	deleteSession: (token: string, sessionId: string): Promise<{ status: string }> =>
+		request(token, `${TUTOR_BASE_URL}/api/sessions/${sessionId}`, { method: 'DELETE' })
 };

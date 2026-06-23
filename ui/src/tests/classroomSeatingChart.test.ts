@@ -39,4 +39,18 @@ describe('ClassroomSeatingChart', () => {
 			expect(screen.getByText('3D view is not available in this browser')).toBeTruthy()
 		);
 	});
+
+	it('offers the three layout choices (rows, U, islands)', () => {
+		render(ClassroomSeatingChart, {
+			props: { students: studentsFixture },
+			context: new Map([['i18n', mockI18nStore]])
+		});
+
+		expect(screen.getByTestId('layout-rows')).toBeTruthy();
+		expect(screen.getByTestId('layout-u')).toBeTruthy();
+		expect(screen.getByTestId('layout-islands')).toBeTruthy();
+		expect(screen.getByText('Disposition en rangées')).toBeTruthy();
+		expect(screen.getByText('Disposition en U')).toBeTruthy();
+		expect(screen.getByText('Disposition en îlots (groupes)')).toBeTruthy();
+	});
 });
