@@ -5,10 +5,10 @@
 fastapi==0.115.7
 uvicorn[standard]==0.30.6
 pydantic[email]==2.10.6
-python-multipart==0.0.18
+python-multipart==0.0.31
 python-dotenv>=1.0,<2
 
-python-socketio==5.11.3
+python-socketio==5.14.0
 python-jose==3.4.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.0
@@ -26,4 +26,4 @@ pytest-anyio
 pytest-mock
 anyio
 
-black==24.8.0
+black==26.3.1
