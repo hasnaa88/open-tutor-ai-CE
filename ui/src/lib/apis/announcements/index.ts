@@ -6,6 +6,7 @@ import { ForbiddenError, NotFoundError } from '../errors';
 
 const BASE_URL = `${TUTOR_BASE_URL}/api`;
 
+
 const request = async <T>(token: string, path: string, options: RequestInit = {}): Promise<T> => {
 	const res = await fetch(`${BASE_URL}${path}`, {
 		...options,

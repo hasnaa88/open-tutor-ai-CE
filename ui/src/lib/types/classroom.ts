@@ -1,5 +1,6 @@
 // src/lib/types/classroom.ts
 
+
 export type PresenceStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 
 export interface ClassroomCreate {

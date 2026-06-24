@@ -5,6 +5,7 @@ Exercises the full sequence-diagram scenarios over a real SQLite DB + a real
 FastAPI TestClient (no mocking), covering classrooms + attendance together.
 """
 
+
 import uuid
 from datetime import date, datetime
 

@@ -9,6 +9,7 @@ import type {
 } from '$lib/types/classroom';
 import { ForbiddenError, NotFoundError } from '../errors';
 
+
 const request = async <T>(token: string, url: string, options: RequestInit = {}): Promise<T> => {
 	const res = await fetch(url, {
 		...options,

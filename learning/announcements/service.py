@@ -11,6 +11,7 @@ from learning.announcements.schemas import AnnouncementOut
 from learning.classrooms.repository import ClassroomRepository
 
 
+
 def _to_announcement_out(announcement: Announcement) -> AnnouncementOut:
     return AnnouncementOut(
         id=announcement.id,

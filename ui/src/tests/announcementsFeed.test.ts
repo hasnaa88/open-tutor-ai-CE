@@ -1,3 +1,4 @@
+
 // src/tests/announcementsFeed.test.ts
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';

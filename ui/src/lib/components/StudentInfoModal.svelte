@@ -1,3 +1,4 @@
+
 <!-- src/lib/components/StudentInfoModal.svelte -->
 <script lang="ts">
 	import { getContext } from 'svelte';

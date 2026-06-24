@@ -1,3 +1,4 @@
+
 <!-- src/lib/components/StartSessionModal.svelte -->
 <script lang="ts">
 	import { createEventDispatcher, getContext } from 'svelte';

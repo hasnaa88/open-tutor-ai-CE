@@ -18,6 +18,7 @@ from learning.sessions.schemas import (
 )
 
 
+
 def _to_presence_out(presence: Presence) -> PresenceOut:
     return PresenceOut(
         id=presence.id,

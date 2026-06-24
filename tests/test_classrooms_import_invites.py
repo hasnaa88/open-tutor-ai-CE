@@ -3,6 +3,7 @@ import csv
 import uuid
 from datetime import date
 
+
 import pytest
 
 from data.models import User, Enrollment

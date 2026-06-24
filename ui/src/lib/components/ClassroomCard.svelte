@@ -12,6 +12,7 @@
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
+	
 	export let classroom: ClassroomOut;
 
 	let menuOpen = false;

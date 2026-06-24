@@ -1,6 +1,7 @@
 # tests/test_announcements.py
 """Tests for the classroom announcements (stream) feature."""
 
+
 import uuid
 
 import pytest

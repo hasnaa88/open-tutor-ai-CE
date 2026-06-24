@@ -1,3 +1,4 @@
+
 <!-- src/lib/components/ClassroomSeatingChart.svelte -->
 <script lang="ts">
 	import { getContext, onMount, onDestroy, createEventDispatcher } from 'svelte';

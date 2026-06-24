@@ -1,5 +1,6 @@
 """Classroom announcements (stream) router — /api/classrooms/{id}/announcements."""
 
+
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status

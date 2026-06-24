@@ -5,6 +5,7 @@ Document the intended contract before AttendanceRepository / AttendanceService
 are implemented (both currently raise NotImplementedError).
 """
 
+
 import uuid
 from datetime import datetime, timedelta
 

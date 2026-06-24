@@ -18,6 +18,7 @@ import type {
 } from '$lib/types/classroom';
 import { ForbiddenError, NotFoundError } from '../errors';
 
+
 const BASE_URL = `${TUTOR_BASE_URL}/api/classrooms`;
 
 const request = async <T>(token: string, path: string, options: RequestInit = {}): Promise<T> => {

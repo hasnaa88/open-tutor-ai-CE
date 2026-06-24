@@ -24,6 +24,7 @@ from learning.classrooms.schemas import (
     InviteOut,
     InviteRedeemResult,
 )
+
 from learning.classrooms.service import ClassroomsService
 from fastapi import UploadFile, File
 

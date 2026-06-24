@@ -1,6 +1,7 @@
 # tests/conftest.py
 """Pytest configuration and fixtures."""
 
+
 import os
 
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-pytest")

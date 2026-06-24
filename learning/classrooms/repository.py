@@ -12,6 +12,8 @@ from learning.classrooms.schemas import ClassroomCreate
 class ClassroomRepository(BaseRepository[Classroom]):
     """Repository for classroom operations."""
 
+    
+    
     def create(self, owner_id: str, data: ClassroomCreate) -> Classroom:
         classroom = Classroom(
             owner_id=owner_id,

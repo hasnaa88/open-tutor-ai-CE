@@ -6,6 +6,7 @@ from data.models import Announcement
 from data.repositories import BaseRepository
 
 
+
 class AnnouncementRepository(BaseRepository[Announcement]):
     """Repository for classroom announcement (stream post) operations."""
 

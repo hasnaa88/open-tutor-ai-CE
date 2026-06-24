@@ -5,6 +5,7 @@
 	import StopCircle from '$lib/components/icons/StopCircle.svelte';
 	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
 
+	
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 

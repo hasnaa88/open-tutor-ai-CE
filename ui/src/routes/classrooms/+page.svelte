@@ -8,6 +8,7 @@
 	import ClassroomCard from '$lib/components/ClassroomCard.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 
+	
 	const i18n = getContext('i18n');
 
 	const classrooms = writable<ClassroomOut[]>([]);

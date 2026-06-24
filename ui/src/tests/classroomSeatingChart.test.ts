@@ -1,3 +1,4 @@
+
 // src/tests/classroomSeatingChart.test.ts
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/svelte';
