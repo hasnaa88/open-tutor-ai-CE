@@ -48,7 +48,7 @@ class AccountService:
             profile_image_url=profile_image_url,
             is_active=True,
             is_admin=is_admin,
-            role=role or "user",
+            role="admin" if is_admin else (role or "user"),
         )
 
     def authenticate(self, email: str, password_plain: str) -> Optional[User]:

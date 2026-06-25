@@ -81,6 +81,7 @@
 	</div>
 
 
+
 </div>
 -->
 
@@ -122,8 +123,8 @@
 
 		<!-- Optional motivation text -->
 		<p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-3">
-			{courseCompletion < 50 
-				? "Keep going 💪" 
+			{courseCompletion < 50
+				? "Keep going 💪"
 				: "You're doing great 🚀"}
 		</p>
 
