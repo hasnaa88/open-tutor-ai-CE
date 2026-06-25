@@ -63,7 +63,8 @@ You have three options:
 
 - **Add by email** — type a student's email in the top bar and click **Add Student**. The student must already have an account. Use **+ Create Student** to create an account on the spot.
 - **Import a CSV** — prepare a file with the columns `email`, `name`, `password` (password is optional). Choose the file and click **Upload**. The result shows how many students were created, enrolled, or skipped.
-- **Share the class code** — the permanent join code is shown at the top of the classroom page. Copy and share it with your students.
+- **Share the permanent join code** — the permanent join code is shown at the top of the classroom page. Copy and share it with your students. It never expires and has no use limit.
+- **Create a one-off invite code** — click **+ New Invite** to generate a temporary code with an optional expiry date and a maximum number of uses. This is useful when you want to control access for a specific enrollment window. Once redeemed the required number of times or past its expiry date, the code stops working.
 
 Once students are enrolled, the list view shows names, emails, and enrollment dates:
 
@@ -93,11 +94,11 @@ Drag to rotate the view and scroll to zoom. Hover over a student's avatar to see
 
 ### 6. Start a live attendance session
 
-Go to the **Présences** tab. When no session has run yet, the counters all show zero:
+Go to the **Attendance** tab. When no session has run yet, the counters all show zero:
 
-![Présences tab — empty state](screenshots/presences-tab-empty.png)
+![Attendance tab — empty state](screenshots/presences-tab-empty.png)
 
-Click **Démarrer une séance** (Start a session). A modal opens where you enter the course name and the objectives for this session:
+Click **Start a session**. A modal opens where you enter the course name and the objectives for this session:
 
 ![Start Session modal](screenshots/start-session-modal.png)
 
@@ -109,9 +110,13 @@ Close the modal. The session now appears in the session list. All enrolled stude
 
 ---
 
-### 7. View attendance and student history
+### 7. View attendance, override a status, and view student history
 
-Click a session in the list. The right panel shows every student and their status. Click any student to see their individual history (presence %, absence %, last 10 sessions):
+Click a session in the list. The right panel shows every student and their status (Present / Absent / Late).
+
+**Manually override a student's status** — click the status badge next to any student to cycle through Present → Late → Absent → Present. Changes are saved immediately. This lets you correct mistakes (e.g. a student forgot to check in but was physically present).
+
+Click a student's name to open their attendance history (presence %, absence %, last 10 sessions):
 
 ![Attendance list with student history](screenshots/attendance-with-student-history.png)
 
@@ -124,9 +129,11 @@ Click a session in the list. The right panel shows every student and their statu
 
 ---
 
-### 9. Post an announcement
+### 9. Post and delete announcements
 
 Go to the **Overview** tab, type a message in the announcement box, and click **Post**. The announcement appears at the top of the stream for all enrolled students.
+
+**Delete an announcement** — click the **trash icon** next to any announcement you posted. The announcement is removed immediately for all users. Only the classroom owner can delete announcements.
 
 ---
 

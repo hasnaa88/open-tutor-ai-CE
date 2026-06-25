@@ -92,14 +92,14 @@ classDiagram
     Announcement "0..*" --> "1" User     : author
 ```
 
-## Description des classes
+## Class descriptions
 
-| Classe | Rôle |
-|--------|------|
-| `User` | Compte utilisateur (teacher ou student). Le champ `role` distingue les deux. |
-| `Classroom` | Salle de classe appartenant à un enseignant (`owner_id`). |
-| `Enrollment` | Table d'association liant un étudiant à une salle de classe avec la date d'inscription. |
-| `Invite` | Code d'invitation permettant à un étudiant de rejoindre une salle. `is_primary = true` = code permanent de la classe. |
-| `ClassSession` | Séance de prise de présences. `ended_at = null` signifie que la séance est en cours. |
-| `Presence` | Statut de présence d'un étudiant pour une séance donnée (PRESENT / ABSENT / LATE). |
-| `Announcement` | Message posté par l'enseignant dans le fil de la salle, visible par tous les inscrits. |
+| Class | Role |
+|-------|------|
+| `User` | User account (teacher or student). The `role` field distinguishes the two. |
+| `Classroom` | A classroom owned by a teacher (`owner_id`). |
+| `Enrollment` | Join table linking a student to a classroom, with the enrollment date. |
+| `Invite` | Invite code that lets a student join a classroom. `is_primary = true` = the classroom's permanent join code. |
+| `ClassSession` | An attendance session. `ended_at = null` means the session is still open. |
+| `Presence` | Attendance status of a student for a given session (PRESENT / ABSENT / LATE). |
+| `Announcement` | A message posted by the teacher in the classroom stream, visible to all enrolled students. |
